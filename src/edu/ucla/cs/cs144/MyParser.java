@@ -160,7 +160,8 @@ class MyParser {
         }
     }
 
-    static void getItems(Document doc){
+	//Our helper functions to parse certain nodes 'getNodeName'
+    static void getItem(Document doc){
         NodeList nList = doc.getElementsByTagName("Item");
         System.out.println("--------------------------");
         for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -176,6 +177,22 @@ class MyParser {
         }
 
     }
+	
+	static void getCategory(Document doc) {
+		
+	}
+	
+	static void getBid(Document doc) {
+		
+	}
+	
+	static void getUser(Document doc) {
+		
+	}
+	
+	static void getLocation(Document doc) {
+		
+	}
 
     /* Process one items-???.xml file.
      */
@@ -207,7 +224,7 @@ class MyParser {
 
             //Root elemnt should be 'Items'
             System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
-            getItems(doc);
+            getItem(doc);
 
         } catch (Exception e) {
             e.printStackTrace();
