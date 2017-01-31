@@ -44,48 +44,48 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
 
 class MyParser {
-    
+
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
-    
+
     static final String[] typeName = {
-	"none",
-	"Element",
-	"Attr",
-	"Text",
-	"CDATA",
-	"EntityRef",
-	"Entity",
-	"ProcInstr",
-	"Comment",
-	"Document",
-	"DocType",
-	"DocFragment",
-	"Notation",
+            "none",
+            "Element",
+            "Attr",
+            "Text",
+            "CDATA",
+            "EntityRef",
+            "Entity",
+            "ProcInstr",
+            "Comment",
+            "Document",
+            "DocType",
+            "DocFragment",
+            "Notation",
     };
-    
+
     static class MyErrorHandler implements ErrorHandler {
-        
+
         public void warning(SAXParseException exception)
-        throws SAXException {
+                throws SAXException {
             fatalError(exception);
         }
-        
+
         public void error(SAXParseException exception)
-        throws SAXException {
+                throws SAXException {
             fatalError(exception);
         }
-        
+
         public void fatalError(SAXParseException exception)
-        throws SAXException {
+                throws SAXException {
             exception.printStackTrace();
             System.out.println("There should be no errors " +
-                               "in the supplied XML files.");
+                    "in the supplied XML files.");
             System.exit(3);
         }
-        
+
     }
-    
+
     /* Non-recursive (NR) version of Node.getElementsByTagName(...)
      */
     static Element[] getElementsByTagNameNR(Element e, String tagName) {
@@ -102,7 +102,7 @@ class MyParser {
         elements.copyInto(result);
         return result;
     }
-    
+
     /* Returns the first subelement of e matching the given tagName, or
      * null if one does not exist. NR means Non-Recursive.
      */
@@ -115,7 +115,7 @@ class MyParser {
         }
         return null;
     }
-    
+
     /* Returns the text associated with the given element (which must have
      * type #PCDATA) as child, or "" if it contains no text.
      */
@@ -127,7 +127,7 @@ class MyParser {
         else
             return "";
     }
-    
+
     /* Returns the text (#PCDATA) associated with the first subelement X
      * of e with the given tagName. If no such X exists or X contains no
      * text, "" is returned. NR means Non-Recursive.
@@ -139,7 +139,7 @@ class MyParser {
         else
             return "";
     }
-    
+
     /* Returns the amount (in XXXXX.xx format) denoted by a money-string
      * like $3,453.23. Returns the input if the input is an empty string.
      */
@@ -152,7 +152,7 @@ class MyParser {
             try { am = nf.parse(money).doubleValue(); }
             catch (ParseException e) {
                 System.out.println("This method should work for all " +
-                                   "money values you find in our data.");
+                        "money values you find in our data.");
                 System.exit(20);
             }
             nf.setGroupingUsed(false);
@@ -160,42 +160,57 @@ class MyParser {
         }
     }
 
-	//Our helper functions to parse certain nodes to form SQL Tables 'getTableName'
-    static void getItem(Document doc){
-        NodeList nList = doc.getElementsByTagName("Item");
-        System.out.println("--------------------------");
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node nNode = nList.item(temp);
-            System.out.println("\nCurrent Element : " + nNode.getNodeName());
-
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) nNode;
-
-                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
+    // Uses the item id from getItem to create multiple categories with the same itemID.
+    static void getCategory(String itemID, Element item){
+        if (item.getNodeType() == Node.ELEMENT_NODE) {
+            NodeList nodeList = item.getElementsByTagName("Category");
+            for(int i = 0; i < nodeList.getLength(); i++){
+                Node node = nodeList.item(i);
+                if(node.getNodeType() == Node.ELEMENT_NODE){
+                    Element eElement = (Element)node;
+                    String category = eElement.getTextContent();
+                    System.out.println(itemID + "," + category);
+                }
             }
-
         }
-
     }
-	
-	static void getCategory(Document doc) {
-        NodeList itemList = doc.getElementsByTagName("Item");
-        System.out.println("--------------------------");
-        for (int temp = 0; temp < itemList.getLength(); temp++) {
-            Node itemNode = itemList.item(temp);
-            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
 
-            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) itemNode;
+    //Our helper functions to parse certain nodes to form SQL Tables 'getTableName'
+    static void getItem(Document doc){
+        if (doc.hasChildNodes()) {
+            NodeList nodeList = doc.getElementsByTagName("Item");
+            int locationCount = 1;
+            int sellerCount = 1;
+            for(int i = 0; i < nodeList.getLength(); i++){
+                Node Item = nodeList.item(i);
+                if (Item.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) Item;
+                    String ItemID = eElement.getAttribute("ItemID");
 
-                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
-                System.out.println("Item ID : " + eElement.getAttribute("ItemID"));
-				int categorySize = eElement.getElementsByTagName("Category").getLength();
-				for (int i = 0; i < categorySize; i++) 
-					System.out.println("Category: " + eElement.getElementsByTagName("Category").item(i).getTextContent());
-			}
-		}
-	}
+                    String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
+                    String Currently = eElement.getElementsByTagName("Currently").item(0).getTextContent();
+                    String Buy_price = ""; // default for buy price
+                    if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
+                        Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent();
+                    }
+
+                    String First_bid = eElement.getElementsByTagName("First_Bid").item(0).getTextContent();
+                    String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
+                    String Location = Integer.toString(locationCount);
+                    locationCount++;
+
+                    String Started = eElement.getElementsByTagName("Started").item(0).getTextContent();
+                    String Ends = eElement.getElementsByTagName("Ends").item(0).getTextContent();
+                    String Seller_id = Integer.toString(sellerCount);
+                    sellerCount++;
+
+                    String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
+                    getCategory(ItemID, eElement);
+                    System.out.println(ItemID + "," + Name + "," + Currently + "," + Buy_price + "," + First_bid + "," + Number_of_bids + "," + Location + "," + Started + "," + Ends + "," + Seller_id + "," + Description);
+                }
+            }
+        }
+    }
 	
 	/*
 	static void getBids(Document doc) {
@@ -225,14 +240,14 @@ class MyParser {
 		
 	}
 	*/
-	
-	static void getUser(Document doc) {
-		
-	}
-	
-	//TODO: Change fxn parameter (int LocationId, Node ItemNode)
-	// then save LocationId 
-	static void getLocation(Document doc) {
+
+    static void getUser(Document doc) {
+
+    }
+
+    //TODO: Change fxn parameter (int LocationId, Node ItemNode)
+    // then save LocationId
+    static void getLocation(Document doc) {
         NodeList itemList = doc.getElementsByTagName("Item");
         System.out.println("--------------------------");
         for (int temp = 0; temp < itemList.getLength(); temp++) {
@@ -242,18 +257,18 @@ class MyParser {
             if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) itemNode;
                 System.out.println("Item Country : " + eElement.getElementsByTagName("Country").item(0).getTextContent());
-				
-				Node locationNode = eElement.getElementsByTagName("Location").item(0);
-				Element eLocationElement = (Element) locationNode;
+
+                Node locationNode = eElement.getElementsByTagName("Location").item(0);
+                Element eLocationElement = (Element) locationNode;
                 System.out.println("Item Location : " + locationNode.getTextContent());
                 System.out.println("Item Latitude : " + eLocationElement.getAttribute("Latitude"));
                 System.out.println("Item Longitude : " + eLocationElement.getAttribute("Longitude"));
 
-			
- 			}
-		}
-		
-	}
+
+            }
+        }
+
+    }
 
     /* Process one items-???.xml file.
      */
@@ -285,17 +300,18 @@ class MyParser {
 
             //Root elemnt should be 'Items'
             System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
+            getItem(doc);
 //          getCategory(doc);
 //			getBids(doc);
-			getLocation(doc);
+            //getLocation(doc);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         /**************************************************************/
-        
+
     }
-    
+
     public static void main (String[] args) {
         if (args.length == 0) {
             System.out.println("Usage: java MyParser [file] [file] ...");
