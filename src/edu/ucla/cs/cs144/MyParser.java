@@ -41,6 +41,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
 import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
 
 class MyParser {
     
@@ -158,7 +159,24 @@ class MyParser {
             return nf.format(am).substring(1);
         }
     }
-    
+
+    static void getItems(Document doc){
+        NodeList nList = doc.getElementsByTagName("Item");
+        System.out.println("--------------------------");
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+            Node nNode = nList.item(temp);
+            System.out.println("\nCurrent Element : " + nNode.getNodeName());
+
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+
+                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
+            }
+
+        }
+
+    }
+
     /* Process one items-???.xml file.
      */
     static void processFile(File xmlFile) {
@@ -184,28 +202,16 @@ class MyParser {
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
         try {
-			
-		doc.getDocumentElement().normalize();
-		
-		//Root elemnt should be 'Items'
-        System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
-		NodeList nList = doc.getElementsByTagName("Item");
-		System.out.println("--------------------------");
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);
-			System.out.println("\nCurrent Element : " + nNode.getNodeName());
-			
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				
-				System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
-			}
-			
-		}
-		}	catch (Exception e) {
-		e.printStackTrace();
-		}
-        
+
+            doc.getDocumentElement().normalize();
+
+            //Root elemnt should be 'Items'
+            System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
+            getItems(doc);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         /**************************************************************/
         
     }
@@ -220,14 +226,14 @@ class MyParser {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(false);
-            factory.setIgnoringElementContentWhitespace(true);      
+            factory.setIgnoringElementContentWhitespace(true);
             builder = factory.newDocumentBuilder();
             builder.setErrorHandler(new MyErrorHandler());
         }
         catch (FactoryConfigurationError e) {
             System.out.println("unable to get a document builder factory");
             System.exit(2);
-        } 
+        }
         catch (ParserConfigurationException e) {
             System.out.println("parser was unable to be configured");
             System.exit(2);
@@ -238,5 +244,6 @@ class MyParser {
             File currentFile = new File(args[i]);
             processFile(currentFile);
         }
+
     }
 }
