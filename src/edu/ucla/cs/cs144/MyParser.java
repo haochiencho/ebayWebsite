@@ -160,7 +160,7 @@ class MyParser {
         }
     }
 
-	//Our helper functions to parse certain nodes 'getNodeName'
+	//Our helper functions to parse certain nodes to form SQL Tables 'getTableName'
     static void getItem(Document doc){
         NodeList nList = doc.getElementsByTagName("Item");
         System.out.println("--------------------------");
@@ -179,18 +179,79 @@ class MyParser {
     }
 	
 	static void getCategory(Document doc) {
-		
+        NodeList itemList = doc.getElementsByTagName("Item");
+        System.out.println("--------------------------");
+        for (int temp = 0; temp < itemList.getLength(); temp++) {
+            Node itemNode = itemList.item(temp);
+            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
+
+            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) itemNode;
+
+                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
+                System.out.println("Item ID : " + eElement.getAttribute("ItemID"));
+				int categorySize = eElement.getElementsByTagName("Category").getLength();
+				for (int i = 0; i < categorySize; i++) 
+					System.out.println("Category: " + eElement.getElementsByTagName("Category").item(i).getTextContent());
+			}
+		}
 	}
 	
-	static void getBid(Document doc) {
+	/*
+	static void getBids(Document doc) {
+		NodeList itemList = doc.getElementsByTagName("Item");
+        System.out.println("--------------------------");
+        for (int temp = 0; temp < itemList.getLength(); temp++) {
+            Node itemNode = itemList.item(temp);
+            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
+
+            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) itemNode;
+
+                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
+                System.out.println("Item ID : " + eElement.getAttribute("ItemID"));
+
+				if (itemNode.hasChildNodes()) {
+					Document bidsNode = (Document) itemNode.getChildNodes();
+					getIndividualBid(bidsNode.getElementsByTagName("Bids"));
+				}
+			}
+		}
+	}
+	
+	static void getIndividualBid (NodeList doc) {
+		NodeList bidList = doc.getElementsByTagName("Bid");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!");
 		
 	}
+	*/
 	
 	static void getUser(Document doc) {
 		
 	}
 	
+	//TODO: Change fxn parameter (int LocationId, Node ItemNode)
+	// then save LocationId 
 	static void getLocation(Document doc) {
+        NodeList itemList = doc.getElementsByTagName("Item");
+        System.out.println("--------------------------");
+        for (int temp = 0; temp < itemList.getLength(); temp++) {
+            Node itemNode = itemList.item(temp);
+            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
+
+            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) itemNode;
+                System.out.println("Item Country : " + eElement.getElementsByTagName("Country").item(0).getTextContent());
+				
+				Node locationNode = eElement.getElementsByTagName("Location").item(0);
+				Element eLocationElement = (Element) locationNode;
+                System.out.println("Item Location : " + locationNode.getTextContent());
+                System.out.println("Item Latitude : " + eLocationElement.getAttribute("Latitude"));
+                System.out.println("Item Longitude : " + eLocationElement.getAttribute("Longitude"));
+
+			
+ 			}
+		}
 		
 	}
 
@@ -224,7 +285,9 @@ class MyParser {
 
             //Root elemnt should be 'Items'
             System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
-            getItem(doc);
+//          getCategory(doc);
+//			getBids(doc);
+			getLocation(doc);
 
         } catch (Exception e) {
             e.printStackTrace();
