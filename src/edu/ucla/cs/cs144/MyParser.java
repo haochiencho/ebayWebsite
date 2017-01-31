@@ -176,6 +176,28 @@ class MyParser {
     }
 
     //Our helper functions to parse certain nodes to form SQL Tables 'getTableName'
+    static void getItem(Element eElement, int locationID, int sellerID){
+        String ItemID = eElement.getAttribute("ItemID");
+
+        String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
+        String Currently = eElement.getElementsByTagName("Currently").item(0).getTextContent();
+        String Buy_price = ""; // default for buy price
+        if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
+            Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent();
+        }
+
+        String First_bid = eElement.getElementsByTagName("First_Bid").item(0).getTextContent();
+        String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
+        String Location = Integer.toString(locationID);
+
+        String Started = eElement.getElementsByTagName("Started").item(0).getTextContent();
+        String Ends = eElement.getElementsByTagName("Ends").item(0).getTextContent();
+        String Seller_id = Integer.toString(sellerID);
+
+        String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
+        System.out.println(ItemID + "," + Name + "," + Currently + "," + Buy_price + "," + First_bid + "," + Number_of_bids + "," + Location + "," + Started + "," + Ends + "," + Seller_id + "," + Description);
+    }
+
     static void getItem(Document doc){
         if (doc.hasChildNodes()) {
             NodeList nodeList = doc.getElementsByTagName("Item");
@@ -185,28 +207,12 @@ class MyParser {
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) Item;
-                    String ItemID = eElement.getAttribute("ItemID");
-
-                    String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
-                    String Currently = eElement.getElementsByTagName("Currently").item(0).getTextContent();
-                    String Buy_price = ""; // default for buy price
-                    if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
-                        Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent();
-                    }
-
-                    String First_bid = eElement.getElementsByTagName("First_Bid").item(0).getTextContent();
-                    String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
-                    String Location = Integer.toString(locationCount);
+                    getItem(eElement, locationCount, sellerCount); // gets a row/tuple of data for Item table
                     locationCount++;
-
-                    String Started = eElement.getElementsByTagName("Started").item(0).getTextContent();
-                    String Ends = eElement.getElementsByTagName("Ends").item(0).getTextContent();
-                    String Seller_id = Integer.toString(sellerCount);
                     sellerCount++;
 
-                    String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
-                    getCategory(ItemID, eElement);
-                    System.out.println(ItemID + "," + Name + "," + Currently + "," + Buy_price + "," + First_bid + "," + Number_of_bids + "," + Location + "," + Started + "," + Ends + "," + Seller_id + "," + Description);
+                    String ItemID = eElement.getAttribute("ItemID");
+                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
                 }
             }
         }
