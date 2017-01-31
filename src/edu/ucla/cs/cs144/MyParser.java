@@ -40,6 +40,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
+import org.w3c.dom.NodeList;
 
 class MyParser {
     
@@ -182,8 +183,28 @@ class MyParser {
         
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
-        
-        
+        try {
+			
+		doc.getDocumentElement().normalize();
+		
+		//Root elemnt should be 'Items'
+        System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
+		NodeList nList = doc.getElementsByTagName("Item");
+		System.out.println("--------------------------");
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+			Node nNode = nList.item(temp);
+			System.out.println("\nCurrent Element : " + nNode.getNodeName());
+			
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nNode;
+				
+				System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
+			}
+			
+		}
+		}	catch (Exception e) {
+		e.printStackTrace();
+		}
         
         /**************************************************************/
         
