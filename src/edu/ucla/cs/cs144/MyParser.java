@@ -315,7 +315,7 @@ class MyParser {
 			data.add(bidID);
 			data.add(Time);
 			data.add(Amount);
-			writeToFile("/home/cs144/ebayData/itemData", data);
+			writeToFile("/home/cs144/ebayData/bidData", data);
 			System.out.println("bidID: " + bidID);
             if(!bidderMap.containsKey(Integer.toString(bidderCount))){
                 bidderMap.put(Integer.toString(bidderCount), 0);
@@ -342,7 +342,7 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-				writeToFile("/home/cs144/ebayData/categoryData", data);
+				writeToFile("/home/cs144/ebayData/sellerData", data);
 			}
 		}
 	}
@@ -370,7 +370,7 @@ class MyParser {
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
-				writeToFile("/home/cs144/ebayData/categoryData", data);
+				writeToFile("/home/cs144/ebayData/locationData", data);
 				
 			}
 		}
