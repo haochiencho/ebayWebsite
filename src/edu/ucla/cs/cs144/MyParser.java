@@ -169,7 +169,11 @@ class MyParser {
                 if(node.getNodeType() == Node.ELEMENT_NODE){
                     Element eElement = (Element)node;
                     String category = eElement.getTextContent();
-                    System.out.println(itemID + "," + category);
+
+                    ArrayList<String> data = new ArrayList<String>();
+                    data.add(itemID);
+                    data.add(category);
+                    writeToFile("/home/cs144/ebayData/categoryData", data);
                 }
             }
         }
@@ -195,10 +199,41 @@ class MyParser {
         String Seller_id = Integer.toString(sellerID);
 
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
-        System.out.println(ItemID + "," + Name + "," + Currently + "," + Buy_price + "," + First_bid + "," + Number_of_bids + "," + Location + "," + Started + "," + Ends + "," + Seller_id + "," + Description);
+
+        // List of Strings that are added in the order to be printed
+        ArrayList<String> data = new ArrayList<String>();
+        data.add(ItemID);
+        data.add(Name);
+        data.add(Currently);
+        data.add(Buy_price);
+        data.add(First_bid);
+        data.add(Number_of_bids);
+        data.add(Location);
+        data.add(Started);
+        data.add(Ends);
+        data.add(Seller_id);
+        data.add(Description);
+        writeToFile("/home/cs144/ebayData/itemData", data);
     }
 
-    static void getItem(Document doc){
+    // appends row/tuple to a file
+    static void writeToFile(String fileName, ArrayList<String> data){
+        StringBuilder str = new StringBuilder();
+        int length = data.size();
+        for(int i = 0; i < length; i++){
+            str.append(data.get(i));
+            if(i != length - 1){
+                str.append(",");
+            }
+            else{
+                str.append("\n");
+            }
+        }
+        System.out.println(str.toString());
+        // append string to file and create file if file doesnt
+    }
+
+    static void getData(Document doc){
         if (doc.hasChildNodes()) {
             NodeList nodeList = doc.getElementsByTagName("Item");
             int locationCount = 1;
@@ -207,17 +242,32 @@ class MyParser {
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) Item;
+
+                    // populates the item table
                     getItem(eElement, locationCount, sellerCount); // gets a row/tuple of data for Item table
                     locationCount++;
                     sellerCount++;
 
+                    // category the item table
                     String ItemID = eElement.getAttribute("ItemID");
                     getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
+
+                    NodeList bids = getElementsByTagName("Bid");
+                    for(int j = 0; j < bids.getLength(); j++){
+                        Node bid = bids.item(i);
+                        if (Item.getNodeType() == Node.ELEMENT_NODE){
+                            Element bidElement = (Element) bid;
+                            getBids(bidElement);
+                        }
+                    }
                 }
             }
         }
     }
-	
+
+    static void getBids(Element bidElement){
+        System.out.println(bidElement.getTextContent());
+    }
 	/*
 	static void getBids(Document doc) {
 		NodeList itemList = doc.getElementsByTagName("Item");
@@ -306,8 +356,7 @@ class MyParser {
 
             //Root elemnt should be 'Items'
             System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
-            getItem(doc);
-//          getCategory(doc);
+            getData(doc);
 //			getBids(doc);
             //getLocation(doc);
 
