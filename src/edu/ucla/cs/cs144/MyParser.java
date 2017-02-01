@@ -254,7 +254,10 @@ class MyParser {
 //                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
 					
 					// polulates the location table
-					getLocation(Integer.toString(locationCount), eElement);
+//					getLocation(Integer.toString(locationCount), eElement);
+
+					// populates the seller table
+					getSeller(Integer.toString(sellerCount), eElement);
 					
 					/*
                     NodeList bids = getElementsByTagName("Bid");
@@ -304,12 +307,30 @@ class MyParser {
 	}
 	*/
 
-    //Our helper functions to parse item nodes for their bidders and sellers to form SQL Table 'user'
-    static void getUser(String userID, String locationID, Element item) {
-		
-    }
+    //Our helper functions to parse item nodes for their sellers to form SQL Table 'seller'
+    static void getSeller(String locationID, Element item) {
+		if (item.getNodeType() == Node.ELEMENT_NODE) {
+			Node sellerNode = item.getElementsByTagName("Seller").item(0);
+			if (sellerNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) sellerNode;
+				String sellerID = eElement.getAttribute("UserID");
+				String rating = eElement.getAttribute("Rating");
 
-    //Our helper functions to parse items and users  for their locations to form SQL Table 'location'
+				ArrayList<String> data = new ArrayList<String>();
+				data.add(sellerID);
+				data.add(rating);
+				data.add(locationID);
+				writeToFile("/home/cs144/ebayData/categoryData", data);
+			}
+		}
+	}
+
+	//TODO: call in getBid
+	static void getBidder(String bidderID, String locationID, Element item) {
+		
+	}
+	
+    //Our helper functions to parse items and bidder  for their locations to form SQL Table 'location'
 	//Uses the location id from getData
     static void getLocation(String locationID, Element item) {
 		if (item.getNodeType() == Node.ELEMENT_NODE) {
