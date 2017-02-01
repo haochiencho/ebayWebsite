@@ -230,7 +230,7 @@ class MyParser {
                 str.append("\n");
             }
         }
-        //System.out.println(str.toString());
+        System.out.println(str.toString());
         // append string to file and create file if file doesnt
     }
 
@@ -246,42 +246,42 @@ class MyParser {
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) Item;
-
-                    // populates the item table
+					
+                    // populates the location table
                     String location = eElement.getElementsByTagName("Location").item(0).getTextContent();
                     int locationID;
                     if(!locationMap.containsKey(location)){
-                        locationCount++;
                         locationMap.put(location, locationCount);
-                        locationID = locationCount;
-                        // call getLocation here
+                        locationID = locationCount;						
+                        locationCount++;						
+                        getLocation(Integer.toString(locationID), eElement);
                     }
                     else{
                         locationID = locationMap.get(location);
                     }
-
+					
+					
+					//populates the seller table
                     Node tempNode = eElement.getElementsByTagName("Seller").item(0);
                     Element tempElement = (Element)tempNode;
                     String sellerIdStr = tempElement.getAttribute("UserID");
                     if(!sellerMap.containsKey(sellerIdStr)){
                         sellerMap.put(sellerIdStr, 0);
                         // call getSeller here
-                        System.out.println(sellerIdStr);
+                        //System.out.println(sellerIdStr);
+						getSeller(eElement);						
                     }
+					
 
+					//populates the item table
                     getItem(eElement, locationID, sellerIdStr); // gets a row/tuple of data for Item table
-
-                    // category the item table
+					
+                    //populates the category table
                     String ItemID = eElement.getAttribute("ItemID");
                     getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
 					
-					// polulates the location table
-//					getLocation(Integer.toString(locationCount), eElement);
-
-					// populates the seller table
-//					getSeller(Integer.toString(sellerCount), eElement);
 					
-					
+					//populates the bid and bidder table
                     Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
 					NodeList bidList = bids.getElementsByTagName("Bid");
                     for(int j = 0; j < bidList.getLength(); j++){
@@ -344,12 +344,14 @@ class MyParser {
 				String location = eElement.getTextContent();
 				String latitude = eElement.getAttribute("Latitude");
 				String longitude = eElement.getAttribute("Longitude");
+				String country = item.getElementsByTagName("Country").item(0).getTextContent();			
 
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(locationID);
 				data.add(location);
 				data.add(latitude);
 				data.add(longitude);
+				data.add(country);
 				writeToFile("/home/cs144/ebayData/categoryData", data);
 				
 			}
@@ -387,7 +389,7 @@ class MyParser {
             doc.getDocumentElement().normalize();
 
             //Root elemnt should be 'Items'
-            System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
+            //System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
             getData(doc);
 
         } catch (Exception e) {
