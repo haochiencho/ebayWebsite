@@ -229,11 +229,13 @@ class MyParser {
                 str.append("\n");
             }
         }
-        System.out.println(str.toString());
+        //System.out.println(str.toString());
         // append string to file and create file if file doesnt
     }
 
     static void getData(Document doc){
+        Map<String, Integer> locationMap = new HashMap<String, Integer>();
+
         if (doc.hasChildNodes()) {
             NodeList nodeList = doc.getElementsByTagName("Item");
             int locationCount = 1;
@@ -244,8 +246,20 @@ class MyParser {
                     Element eElement = (Element) Item;
 
                     // populates the item table
-                    getItem(eElement, locationCount, sellerCount); // gets a row/tuple of data for Item table
-                    locationCount++;
+                    String location = eElement.getElementsByTagName("Location").item(0).getTextContent();
+                    int locationID;
+                    if(!locationMap.containsKey(location)){
+                        locationCount++;
+                        locationMap.put(location, locationCount);
+                        locationID = locationCount;
+                        System.out.println(locationID);
+                        System.out.println(location);
+                    }
+                    else{
+                        locationID = locationMap.get(location);
+                    }
+                    getItem(eElement, locationID, sellerCount); // gets a row/tuple of data for Item table
+
                     sellerCount++;
 
                     // category the item table
