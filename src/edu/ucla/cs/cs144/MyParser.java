@@ -237,11 +237,14 @@ class MyParser {
     static void getData(Document doc){
         Map<String, Integer> locationMap = new HashMap<String, Integer>();
         Map<String, Integer> sellerMap = new HashMap<String, Integer>();
+        Map<String, Integer> bidderMap = new HashMap<String, Integer>();
 
         if (doc.hasChildNodes()) {
             NodeList nodeList = doc.getElementsByTagName("Item");
             int locationCount = 1;
             int sellerCount = 1;
+            int bidCount = 1;
+            int bidderCount = 1;
             for(int i = 0; i < nodeList.getLength(); i++){
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
@@ -266,7 +269,6 @@ class MyParser {
                     if(!sellerMap.containsKey(sellerIdStr)){
                         sellerMap.put(sellerIdStr, 0);
                         // call getSeller here
-                        System.out.println(sellerIdStr);
                     }
 
                     getItem(eElement, locationID, sellerIdStr); // gets a row/tuple of data for Item table
@@ -288,7 +290,8 @@ class MyParser {
                         Node bid = bidList.item(j);
                         if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
-                            getBid(bidElement);
+                            bidderCount = getBid(bidElement, ItemID, Integer.toString(bidCount), bidderCount, bidderMap);
+                            bidCount++;
                         }
                     }
 					
@@ -298,16 +301,30 @@ class MyParser {
     }
 
     //Our helper functions to parse bid node to form SQL Table 'bid'
-    static void getBid(Element bidElement){
+    /**@return int returns new bidderCount */
+    static int getBid(Element bidElement, String itemID, String bidID, int bidderCount, Map<String, Integer> bidderMap){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
 	        String Amount = bidElement.getElementsByTagName("Amount").item(0).getTextContent();
 
+
 			ArrayList<String> data = new ArrayList<String>();
+			data.add(itemID);
+            data.add(Integer.toString(bidderCount));
+			data.add(bidID);
 			data.add(Time);
 			data.add(Amount);
 			writeToFile("/home/cs144/ebayData/itemData", data);
+			System.out.println("bidID: " + bidID);
+            if(!bidderMap.containsKey(Integer.toString(bidderCount))){
+                bidderMap.put(Integer.toString(bidderCount), 0);
+                System.out.println("bidCount: " + Integer.toString(bidderCount));
+                bidderCount++;
+
+                // call getBidder here
+            }
         }
+        return bidderCount;
 
     }
 	
