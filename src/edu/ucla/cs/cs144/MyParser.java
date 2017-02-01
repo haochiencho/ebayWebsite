@@ -291,6 +291,7 @@ class MyParser {
                         Node bid = bidList.item(j);
                         if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
+                            String bidderID = bidElement.getAttribute("UserID");
                             bidderCount = getBid(bidElement, ItemID, Integer.toString(bidCount), bidderCount, bidderMap);
                             bidCount++;
                         }
@@ -316,10 +317,11 @@ class MyParser {
 			data.add(Time);
 			data.add(Amount);
 			writeToFile("/home/cs144/ebayData/itemData", data);
-			System.out.println("bidID: " + bidID);
-            if(!bidderMap.containsKey(Integer.toString(bidderCount))){
-                bidderMap.put(Integer.toString(bidderCount), 0);
-                System.out.println("bidCount: " + Integer.toString(bidderCount));
+
+            Element bidderElement = (Element)bidElement.getElementsByTagName("Bidder").item(0);
+            String bidderUserID = bidderElement.getAttribute("UserID");
+            if(!bidderMap.containsKey(bidderUserID)){
+                bidderMap.put(bidderUserID, 0);
                 bidderCount++;
 
                 // call getBidder here
