@@ -257,58 +257,41 @@ class MyParser {
 //					getLocation(Integer.toString(locationCount), eElement);
 
 					// populates the seller table
-					getSeller(Integer.toString(sellerCount), eElement);
+//					getSeller(Integer.toString(sellerCount), eElement);
 					
-					/*
-                    NodeList bids = getElementsByTagName("Bid");
-                    for(int j = 0; j < bids.getLength(); j++){
-                        Node bid = bids.item(i);
-                        if (Item.getNodeType() == Node.ELEMENT_NODE){
+					
+                    Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
+					NodeList bidList = bids.getElementsByTagName("Bid");
+                    for(int j = 0; j < bidList.getLength(); j++){
+                        Node bid = bidList.item(j);
+                        if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
-                            getBids(bidElement);
+                            getBid(bidElement);
                         }
                     }
-					*/
+					
                 }
             }
         }
     }
 
-    //Our helper functions to parse item nodes for their bids to form SQL Table 'bid'
-    static void getBids(Element bidElement){
-        System.out.println(bidElement.getTextContent());
+    //Our helper functions to parse bid node to form SQL Table 'bid'
+    static void getBid(Element bidElement){
+        if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
+	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
+	        String Amount = bidElement.getElementsByTagName("Amount").item(0).getTextContent();
+
+			ArrayList<String> data = new ArrayList<String>();
+			data.add(Time);
+			data.add(Amount);
+			writeToFile("/home/cs144/ebayData/itemData", data);
+        }
+
     }
-	/*
-	static void getBids(Document doc) {
-		NodeList itemList = doc.getElementsByTagName("Item");
-        System.out.println("--------------------------");
-        for (int temp = 0; temp < itemList.getLength(); temp++) {
-            Node itemNode = itemList.item(temp);
-            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
-
-            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) itemNode;
-
-                System.out.println("Item Name : " + eElement.getElementsByTagName("Name").item(0).getTextContent());
-                System.out.println("Item ID : " + eElement.getAttribute("ItemID"));
-
-				if (itemNode.hasChildNodes()) {
-					Document bidsNode = (Document) itemNode.getChildNodes();
-					getIndividualBid(bidsNode.getElementsByTagName("Bids"));
-				}
-			}
-		}
-	}
 	
-	static void getIndividualBid (NodeList doc) {
-		NodeList bidList = doc.getElementsByTagName("Bid");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!");
-		
-	}
-	*/
 
     //Our helper functions to parse item nodes for their sellers to form SQL Table 'seller'
-    static void getSeller(String locationID, Element item) {
+    static void getSeller(Element item) {
 		if (item.getNodeType() == Node.ELEMENT_NODE) {
 			Node sellerNode = item.getElementsByTagName("Seller").item(0);
 			if (sellerNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -319,7 +302,6 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-				data.add(locationID);
 				writeToFile("/home/cs144/ebayData/categoryData", data);
 			}
 		}
@@ -350,7 +332,6 @@ class MyParser {
 				
 			}
 		}
-
 
     }
 	
