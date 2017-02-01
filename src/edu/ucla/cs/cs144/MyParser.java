@@ -160,6 +160,7 @@ class MyParser {
         }
     }
 
+	//Our helper functions to parse item nodes for their catgories to form SQL Table 'category'
     // Uses the item id from getItem to create multiple categories with the same itemID.
     static void getCategory(String itemID, Element item){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
@@ -179,7 +180,7 @@ class MyParser {
         }
     }
 
-    //Our helper functions to parse certain nodes to form SQL Tables 'getTableName'
+    //Our helper functions to parse item nodes to form SQL Table 'item'
     static void getItem(Element eElement, int locationID, int sellerID){
         String ItemID = eElement.getAttribute("ItemID");
 
@@ -192,7 +193,7 @@ class MyParser {
 
         String First_bid = eElement.getElementsByTagName("First_Bid").item(0).getTextContent();
         String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
-        String Location = Integer.toString(locationID);
+        String Location_id = Integer.toString(locationID);
 
         String Started = eElement.getElementsByTagName("Started").item(0).getTextContent();
         String Ends = eElement.getElementsByTagName("Ends").item(0).getTextContent();
@@ -208,7 +209,7 @@ class MyParser {
         data.add(Buy_price);
         data.add(First_bid);
         data.add(Number_of_bids);
-        data.add(Location);
+        data.add(Location_id);
         data.add(Started);
         data.add(Ends);
         data.add(Seller_id);
@@ -244,14 +245,18 @@ class MyParser {
                     Element eElement = (Element) Item;
 
                     // populates the item table
-                    getItem(eElement, locationCount, sellerCount); // gets a row/tuple of data for Item table
+//                    getItem(eElement, locationCount, sellerCount); // gets a row/tuple of data for Item table
                     locationCount++;
                     sellerCount++;
 
                     // category the item table
                     String ItemID = eElement.getAttribute("ItemID");
-                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
-
+//                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
+					
+					// polulates the location table
+					getLocation(Integer.toString(locationCount), eElement);
+					
+					/*
                     NodeList bids = getElementsByTagName("Bid");
                     for(int j = 0; j < bids.getLength(); j++){
                         Node bid = bids.item(i);
@@ -260,11 +265,13 @@ class MyParser {
                             getBids(bidElement);
                         }
                     }
+					*/
                 }
             }
         }
     }
 
+    //Our helper functions to parse item nodes for their bids to form SQL Table 'bid'
     static void getBids(Element bidElement){
         System.out.println(bidElement.getTextContent());
     }
@@ -297,34 +304,35 @@ class MyParser {
 	}
 	*/
 
-    static void getUser(Document doc) {
-
+    //Our helper functions to parse item nodes for their bidders and sellers to form SQL Table 'user'
+    static void getUser(String userID, String locationID, Element item) {
+		
     }
 
-    //TODO: Change fxn parameter (int LocationId, Node ItemNode)
-    // then save LocationId
-    static void getLocation(Document doc) {
-        NodeList itemList = doc.getElementsByTagName("Item");
-        System.out.println("--------------------------");
-        for (int temp = 0; temp < itemList.getLength(); temp++) {
-            Node itemNode = itemList.item(temp);
-            System.out.println("\nCurrent Element : " + itemNode.getNodeName());
+    //Our helper functions to parse items and users  for their locations to form SQL Table 'location'
+	//Uses the location id from getData
+    static void getLocation(String locationID, Element item) {
+		if (item.getNodeType() == Node.ELEMENT_NODE) {
+			Node locationNode = item.getElementsByTagName("Location").item(0);
+			if (locationNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) locationNode;
+				String location = eElement.getTextContent();
+				String latitude = eElement.getAttribute("Latitude");
+				String longitude = eElement.getAttribute("Longitude");
 
-            if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) itemNode;
-                System.out.println("Item Country : " + eElement.getElementsByTagName("Country").item(0).getTextContent());
+				ArrayList<String> data = new ArrayList<String>();
+				data.add(locationID);
+				data.add(location);
+				data.add(latitude);
+				data.add(longitude);
+				writeToFile("/home/cs144/ebayData/categoryData", data);
+				
+			}
+		}
 
-                Node locationNode = eElement.getElementsByTagName("Location").item(0);
-                Element eLocationElement = (Element) locationNode;
-                System.out.println("Item Location : " + locationNode.getTextContent());
-                System.out.println("Item Latitude : " + eLocationElement.getAttribute("Latitude"));
-                System.out.println("Item Longitude : " + eLocationElement.getAttribute("Longitude"));
-
-
-            }
-        }
 
     }
+	
 
     /* Process one items-???.xml file.
      */
@@ -357,8 +365,6 @@ class MyParser {
             //Root elemnt should be 'Items'
             System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
             getData(doc);
-//			getBids(doc);
-            //getLocation(doc);
 
         } catch (Exception e) {
             e.printStackTrace();
