@@ -185,13 +185,13 @@ class MyParser {
         String ItemID = eElement.getAttribute("ItemID");
 
         String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
-        String Currently = eElement.getElementsByTagName("Currently").item(0).getTextContent();
+        String Currently = strip(eElement.getElementsByTagName("Currently").item(0).getTextContent());
         String Buy_price = ""; // default for buy price
         if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
-            Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent();
+            strip(Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent());
         }
 
-        String First_bid = eElement.getElementsByTagName("First_Bid").item(0).getTextContent();
+        String First_bid = strip(eElement.getElementsByTagName("First_Bid").item(0).getTextContent());
         String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
         String Location_id = Integer.toString(locationID);
 
@@ -307,7 +307,7 @@ class MyParser {
     static int getBid(Element bidElement, String itemID, String bidID, int bidderCount, Map<String, Integer> bidderMap){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
-	        String Amount = bidElement.getElementsByTagName("Amount").item(0).getTextContent();
+	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
 
 
 			ArrayList<String> data = new ArrayList<String>();
@@ -344,7 +344,7 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-				writeToFile("/home/cs144/ebayData/categoryData", data);
+				writeToFile("/home/cs144/ebayData/sellerData", data);
 			}
 		}
 	}
@@ -372,7 +372,7 @@ class MyParser {
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
-				writeToFile("/home/cs144/ebayData/categoryData", data);
+				writeToFile("/home/cs144/ebayData/locationData", data);
 				
 			}
 		}
