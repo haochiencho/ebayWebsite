@@ -245,9 +245,8 @@ class MyParser {
             }
         }
 
-        System.out.println(str.toString());
+        //System.out.println(str.toString());
         // append string to file and create file if file doesnt
-		/*
         try{
             FileWriter fw = new FileWriter(fileName, true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -256,7 +255,6 @@ class MyParser {
             out.close();
         } catch (IOException e) {
         }
-		*/
     }
 
     static void getData(Document doc){
@@ -286,16 +284,16 @@ class MyParser {
                         sellerMap.put(sellerIdStr, 0);
                         // call getSeller here
                         //System.out.println(sellerIdStr);
-						//getSeller(eElement);						
+						getSeller(eElement);						
                     }
 					
 
 					//populates the item table
-                    //getItem(eElement, locationCount, sellerIdStr); // gets a row/tuple of data for Item table
+                    getItem(eElement, locationCount, sellerIdStr); // gets a row/tuple of data for Item table
 					
                     //populates the category table
                     String ItemID = eElement.getAttribute("ItemID");
-                    //getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
+                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
 					
 					
 					//populates the bid and bidder table
