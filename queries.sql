@@ -1,0 +1,1 @@
+select sellerID from seller;

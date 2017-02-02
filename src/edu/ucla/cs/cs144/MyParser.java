@@ -174,7 +174,7 @@ class MyParser {
                     ArrayList<String> data = new ArrayList<String>();
                     data.add(itemID);
                     data.add(category);
-                    writeToFile("bin/categoryData.csv", data);
+                    writeToFile("categoryData.csv", data);
                 }
             }
         }
@@ -203,7 +203,7 @@ class MyParser {
         String Currently = strip(eElement.getElementsByTagName("Currently").item(0).getTextContent());
         String Buy_price = ""; // default for buy price
         if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
-            strip(Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent());
+            Buy_price = strip(eElement.getElementsByTagName("Buy_Price").item(0).getTextContent());
         }
 
         String First_bid = strip(eElement.getElementsByTagName("First_Bid").item(0).getTextContent());
@@ -214,9 +214,8 @@ class MyParser {
 		String Ends_xml = eElement.getElementsByTagName("Ends").item(0).getTextContent();
 		
 		String Started = convertToSqlDateFormat(Started_xml);
-		String Ends = convertToSqlDateFormat(Started_xml);
-		
-		String Seller_id = sellerID;
+		String Ends = convertToSqlDateFormat(Ends_xml);
+
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 
         // List of Strings that are added in the order to be printed
@@ -230,9 +229,9 @@ class MyParser {
         data.add(Location_id);
         data.add(Started);
         data.add(Ends);
-        data.add(Seller_id);
+        data.add(sellerID);
         data.add(Description);
-        writeToFile("bin/itemData.csv", data);
+        writeToFile("itemData.csv", data);
     }
 
     // appends row/tuple to a file
@@ -242,7 +241,7 @@ class MyParser {
         for(int i = 0; i < length; i++){
             str.append(data.get(i));
             if(i != length - 1){
-                str.append(",");
+                str.append(columnSeparator);
             }
         }
 
@@ -341,7 +340,7 @@ class MyParser {
             data.add(bidID);
             data.add(Time);
             data.add(Amount);
-            writeToFile("bin/bidData.csv", data);
+            writeToFile("bidData.csv", data);
 
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
@@ -363,7 +362,7 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-				writeToFile("bin/sellerData.csv", data);
+				writeToFile("sellerData.csv", data);
 			}
 		}
 	}
@@ -386,7 +385,7 @@ class MyParser {
 		data.add(rating);
 		data.add(locationID);
 		String home = System.getProperty("user.home");
-		writeToFile("bin/bidderData.csv", data);
+		writeToFile("bidderData.csv", data);
 
 
 	}
@@ -413,7 +412,7 @@ class MyParser {
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
-				writeToFile("bin/locationData.csv", data);
+				writeToFile("locationData.csv", data);
 				
 			}
 		}
