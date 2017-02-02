@@ -208,7 +208,6 @@ class MyParser {
 
         String First_bid = strip(eElement.getElementsByTagName("First_Bid").item(0).getTextContent());
         String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
-        String Location_id = Integer.toString(locationID);
         
 		String Started_xml = eElement.getElementsByTagName("Started").item(0).getTextContent();
 		String Ends_xml = eElement.getElementsByTagName("Ends").item(0).getTextContent();
@@ -227,7 +226,7 @@ class MyParser {
         data.add(Buy_price);
         data.add(First_bid);
         data.add(Number_of_bids);
-        data.add(Location_id);
+        data.add(Integer.toString(locationID));
         data.add(Started);
         data.add(Ends);
         data.add(Seller_id);
@@ -246,8 +245,9 @@ class MyParser {
             }
         }
 
-        //System.out.println(str.toString());
+        System.out.println(str.toString());
         // append string to file and create file if file doesnt
+		/*
         try{
             FileWriter fw = new FileWriter(fileName, true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -256,10 +256,10 @@ class MyParser {
             out.close();
         } catch (IOException e) {
         }
+		*/
     }
 
     static void getData(Document doc){
-        Map<String, Integer> locationMap = new HashMap<String, Integer>();
         Map<String, Integer> sellerMap = new HashMap<String, Integer>();
         Map<String, Integer> bidderMap = new HashMap<String, Integer>();
 
@@ -273,18 +273,9 @@ class MyParser {
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) Item;
 
-                    // populates the item table
-                    String location = eElement.getElementsByTagName("Location").item(0).getTextContent();
-                    int locationID;
-                    if(!locationMap.containsKey(location)){
-                        locationMap.put(location, locationCount);
-                        locationID = locationCount;						
-                        locationCount++;						
-                        getLocation(Integer.toString(locationID), eElement);
-                    }
-                    else{
-                        locationID = locationMap.get(location);
-                    }
+                    // populates the location table
+                    getLocation(locationCount, eElement);
+					locationCount++; //locationCount will act as our locationID ie. primary key
 					
 					
 					//populates the seller table
@@ -295,16 +286,16 @@ class MyParser {
                         sellerMap.put(sellerIdStr, 0);
                         // call getSeller here
                         //System.out.println(sellerIdStr);
-						getSeller(eElement);						
+						//getSeller(eElement);						
                     }
 					
 
 					//populates the item table
-                    getItem(eElement, locationID, sellerIdStr); // gets a row/tuple of data for Item table
+                    //getItem(eElement, locationCount, sellerIdStr); // gets a row/tuple of data for Item table
 					
                     //populates the category table
                     String ItemID = eElement.getAttribute("ItemID");
-                    getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
+                    //getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
 					
 					
 					//populates the bid and bidder table
@@ -315,7 +306,8 @@ class MyParser {
                         if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
                             String bidderID = bidElement.getAttribute("UserID");
-                            getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap, locationMap);
+                            if ( getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap, locationCount) == true )
+								locationCount++;
                             bidCount++;
                         }
                     }
@@ -326,7 +318,7 @@ class MyParser {
     }
 
     //Our helper functions to parse bid node to form SQL Table 'bid'
-    static void getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, Map<String, Integer> locationMap){
+    static boolean getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, int locationID){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
 	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
@@ -343,11 +335,9 @@ class MyParser {
             data.add(Amount);
             writeToFile("bin/bidData.csv", data);
 
-            if(!bidderMap.containsKey(bidderUserID)){
-                bidderMap.put(bidderUserID, 0);
-				getBidder(bidderUserID, bidderElement, locationMap);
-            }
+			return getBidder(bidderUserID, bidderElement, locationID);
         }
+		return false;
     }
 	
 
@@ -369,53 +359,47 @@ class MyParser {
 	}
 
 	//TODO: call in getBid
-	static void getBidder(String bidderID, Element bidderElement, Map<String, Integer> locationMap){
+	static boolean getBidder(String bidderID, Element bidderElement, int locationID){
+		boolean getLocationFuncIsCalled = false;
 		String rating = bidderElement.getAttribute("Rating");
-        String locationID = "";
 		if(bidderElement.getElementsByTagName("Location").getLength() > 0) {
-            Element locationElement = (Element) bidderElement.getElementsByTagName("Location").item(0);
-            locationID = locationElement.getTextContent();
-            if(!locationMap.containsKey(locationID)){
-                locationMap.put(locationID, 0);
-                getLocation(locationID, bidderElement);
-            }
+            getLocation(locationID, bidderElement);
+			getLocationFuncIsCalled = true;
         }
 	
 		ArrayList<String> data = new ArrayList<String>();
 		data.add(bidderID);
 		data.add(rating);
-		data.add(locationID);
+		data.add(Integer.toString(locationID));
 		String home = System.getProperty("user.home");
 		writeToFile("bin/bidderData.csv", data);
-
+		return getLocationFuncIsCalled;
 
 	}
 	
     //Our helper functions to parse items and bidder  for their locations to form SQL Table 'location'
 	//Uses the location id from getData
-    static void getLocation(String locationID, Element item) {
+    static void getLocation(int locationID, Element item) {
 		if (item.getNodeType() == Node.ELEMENT_NODE) {
-			Node locationNode = item.getElementsByTagName("Location").item(0);
-			if (locationNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) locationNode;
-				String location = eElement.getTextContent();
-				String latitude = eElement.getAttribute("Latitude");
-				String longitude = eElement.getAttribute("Longitude");
+			Element locationElement = getElementByTagNameNR( item, "Location"); //need to use NON-recursive, else will get element of children
+				String location = locationElement.getTextContent();
+				String latitude = locationElement.getAttribute("Latitude");
+				String longitude = locationElement.getAttribute("Longitude");
                 String country = "";
-                if(item.getElementsByTagName("Country").getLength() > 0) {
+                if(getElementsByTagNameNR( item,"Country").length > 0) {
                     country = item.getElementsByTagName("Country").item(0).getTextContent();
                 }
 
 
 				ArrayList<String> data = new ArrayList<String>();
-				data.add(locationID);
+				data.add(Integer.toString(locationID));
 				data.add(location);
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
 				writeToFile("bin/locationData.csv", data);
 				
-			}
+
 		}
     }
 	
