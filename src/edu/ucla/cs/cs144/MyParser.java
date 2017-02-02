@@ -392,8 +392,8 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(Integer.toString(locationID));
 				data.add(location);
-				data.add(latitude);
 				data.add(longitude);
+				data.add(latitude);				
 				data.add(country);
 				writeToFile("locationData.csv", data);
 				
