@@ -369,13 +369,9 @@ class MyParser {
 		data.add(rating);
 		data.add(Integer.toString(locationID));
 		String home = System.getProperty("user.home");
-<<<<<<< HEAD
 		writeToFile("bidderData.csv", data);
 
-=======
-		writeToFile("bin/bidderData.csv", data);
 		return getLocationFuncIsCalled;
->>>>>>> 22a7e5ed769d03cd7845b5c7c2795a6dbde08e24
 
 	}
 	
