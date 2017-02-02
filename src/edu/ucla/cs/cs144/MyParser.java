@@ -345,7 +345,7 @@ class MyParser {
 	}
 
 	//TODO: call in getBid
-	static void getBidder(String bidderID, String locationID, Element item) {
+	static void getBidder(String bidderID, String locationID, Element bidderElement) {
 		
 	}
 	
