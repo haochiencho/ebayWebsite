@@ -315,7 +315,7 @@ class MyParser {
                         if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
                             String bidderID = bidElement.getAttribute("UserID");
-                            getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap);
+                            getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap, locationMap);
                             bidCount++;
                         }
                     }
@@ -326,7 +326,7 @@ class MyParser {
     }
 
     //Our helper functions to parse bid node to form SQL Table 'bid'
-    static void getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap){
+    static void getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, Map<String, Integer> locationMap){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
 	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
@@ -345,7 +345,7 @@ class MyParser {
 
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
-				//call getbidder here
+				getBidder(bidderUserID, bidderElement, locationMap);
             }
         }
     }
@@ -369,16 +369,26 @@ class MyParser {
 	}
 
 	//TODO: call in getBid
-	static void getBidder(String bidderID, String locationID, Element bidderElement) {
+	static void getBidder(String bidderID, Element bidderElement, Map<String, Integer> locationMap){
 		String rating = bidderElement.getAttribute("Rating");
+        String locationID = "";
+		if(bidderElement.getElementsByTagName("Location").getLength() > 0) {
+            Element locationElement = (Element) bidderElement.getElementsByTagName("Location").item(0);
+            locationID = locationElement.getTextContent();
+            if(!locationMap.containsKey(locationID)){
+                locationMap.put(locationID, 0);
+                getLocation(locationID, bidderElement);
+            }
+        }
 	
 		ArrayList<String> data = new ArrayList<String>();
-		data.add(bidderId);
+		data.add(bidderID);
 		data.add(rating);
 		data.add(locationID);
 		String home = System.getProperty("user.home");
-		writeToFile(home + "/ebay-data/bidderData.csv", data);
-		
+		writeToFile("bin/bidderData.csv", data);
+
+
 	}
 	
     //Our helper functions to parse items and bidder  for their locations to form SQL Table 'location'
@@ -391,7 +401,11 @@ class MyParser {
 				String location = eElement.getTextContent();
 				String latitude = eElement.getAttribute("Latitude");
 				String longitude = eElement.getAttribute("Longitude");
-				String country = item.getElementsByTagName("Country").item(0).getTextContent();			
+                String country = "";
+                if(item.getElementsByTagName("Country").getLength() > 0) {
+                    country = item.getElementsByTagName("Country").item(0).getTextContent();
+                }
+
 
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(locationID);
@@ -403,7 +417,6 @@ class MyParser {
 				
 			}
 		}
-
     }
 	
 
