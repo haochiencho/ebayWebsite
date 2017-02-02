@@ -174,7 +174,8 @@ class MyParser {
                     ArrayList<String> data = new ArrayList<String>();
                     data.add(itemID);
                     data.add(category);
-                    writeToFile("/home/cs144/ebayData/categoryData", data);
+                    String home = System.getProperty("user.home");
+                    writeToFile(home + "/ebay-data/categoryData.csv", data);
                 }
             }
         }
@@ -215,7 +216,8 @@ class MyParser {
         data.add(Ends);
         data.add(Seller_id);
         data.add(Description);
-        writeToFile("/home/cs144/ebayData/itemData", data);
+        String home = System.getProperty("user.home");
+        writeToFile(home + "/ebay-data/itemData.csv", data);
     }
 
     // appends row/tuple to a file
@@ -227,12 +229,18 @@ class MyParser {
             if(i != length - 1){
                 str.append(",");
             }
-            else{
-                str.append("\n");
-            }
         }
+
         //System.out.println(str.toString());
         // append string to file and create file if file doesnt
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw);
+            out.println(str.toString());
+            out.close();
+        } catch (IOException e) {
+        }
     }
 
     static void getData(Document doc){
@@ -317,7 +325,8 @@ class MyParser {
             data.add(bidID);
             data.add(Time);
             data.add(Amount);
-            writeToFile("/home/cs144/ebayData/itemData", data);
+            String home = System.getProperty("user.home");
+            writeToFile(home + "/ebay-data/bidData.csv", data);
 
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
@@ -339,7 +348,8 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-				writeToFile("/home/cs144/ebayData/sellerData", data);
+                String home = System.getProperty("user.home");
+				writeToFile(home + "/ebay-data/sellerData.csv", data);
 			}
 		}
 	}
@@ -367,7 +377,8 @@ class MyParser {
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
-				writeToFile("/home/cs144/ebayData/locationData", data);
+                String home = System.getProperty("user.home");
+				writeToFile(home + "/ebay-data/locationData.csv", data);
 				
 			}
 		}
