@@ -174,8 +174,7 @@ class MyParser {
                     ArrayList<String> data = new ArrayList<String>();
                     data.add(itemID);
                     data.add(category);
-                    String home = System.getProperty("user.home");
-                    writeToFile(home + "/ebay-data/categoryData.csv", data);
+                    writeToFile("bin/categoryData.csv", data);
                 }
             }
         }
@@ -233,8 +232,7 @@ class MyParser {
         data.add(Ends);
         data.add(Seller_id);
         data.add(Description);
-        String home = System.getProperty("user.home");
-        writeToFile(home + "/ebay-data/itemData.csv", data);
+        writeToFile("bin/itemData.csv", data);
     }
 
     // appends row/tuple to a file
@@ -343,8 +341,7 @@ class MyParser {
             data.add(bidID);
             data.add(Time);
             data.add(Amount);
-            String home = System.getProperty("user.home");
-            writeToFile(home + "/ebay-data/bidData.csv", data);
+            writeToFile("bin/bidData.csv", data);
 
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
@@ -366,8 +363,7 @@ class MyParser {
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(sellerID);
 				data.add(rating);
-                String home = System.getProperty("user.home");
-				writeToFile(home + "/ebay-data/sellerData.csv", data);
+				writeToFile("bin/sellerData.csv", data);
 			}
 		}
 	}
@@ -403,8 +399,7 @@ class MyParser {
 				data.add(latitude);
 				data.add(longitude);
 				data.add(country);
-                String home = System.getProperty("user.home");
-				writeToFile(home + "/ebay-data/locationData.csv", data);
+				writeToFile("bin/locationData.csv", data);
 				
 			}
 		}
