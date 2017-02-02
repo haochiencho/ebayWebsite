@@ -348,7 +348,7 @@ class MyParser {
 
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
-                // call getBidder here
+				//call getbidder here
             }
         }
     }
@@ -374,6 +374,14 @@ class MyParser {
 
 	//TODO: call in getBid
 	static void getBidder(String bidderID, String locationID, Element bidderElement) {
+		String rating = bidderElement.getAttribute("Rating");
+	
+		ArrayList<String> data = new ArrayList<String>();
+		data.add(bidderId);
+		data.add(rating);
+		data.add(locationID);
+		String home = System.getProperty("user.home");
+		writeToFile(home + "/ebay-data/bidderData.csv", data);
 		
 	}
 	
