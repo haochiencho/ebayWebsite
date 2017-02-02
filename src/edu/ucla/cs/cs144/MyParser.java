@@ -195,6 +195,7 @@ class MyParser {
 	}
 	
     //Our helper functions to parse item nodes to form SQL Table 'item'
+    /**@var sellerID string cannot be casted into an integer */
     static void getItem(Element eElement, int locationID, String sellerID){
         String ItemID = eElement.getAttribute("ItemID");
 
@@ -261,7 +262,6 @@ class MyParser {
             int locationCount = 1;
             int sellerCount = 1;
             int bidCount = 1;
-            int bidderCount = 1;
             for(int i = 0; i < nodeList.getLength(); i++){
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
@@ -309,7 +309,7 @@ class MyParser {
                         if (bid.getNodeType() == Node.ELEMENT_NODE){
                             Element bidElement = (Element) bid;
                             String bidderID = bidElement.getAttribute("UserID");
-                            bidderCount = getBid(bidElement, ItemID, Integer.toString(bidCount), bidderCount, bidderMap);
+                            getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap);
                             bidCount++;
                         }
                     }
@@ -320,31 +320,28 @@ class MyParser {
     }
 
     //Our helper functions to parse bid node to form SQL Table 'bid'
-    /**@return int returns new bidderCount */
-    static int getBid(Element bidElement, String itemID, String bidID, int bidderCount, Map<String, Integer> bidderMap){
+    static void getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
 	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
 
-			ArrayList<String> data = new ArrayList<String>();
-			data.add(itemID);
-            data.add(Integer.toString(bidderCount));
-			data.add(bidID);
-			data.add(Time);
-			data.add(Amount);
-			writeToFile("/home/cs144/ebayData/itemData", data);
 
             Element bidderElement = (Element)bidElement.getElementsByTagName("Bidder").item(0);
             String bidderUserID = bidderElement.getAttribute("UserID");
+
+            ArrayList<String> data = new ArrayList<String>();
+            data.add(itemID);
+            data.add(bidderUserID);
+            data.add(bidID);
+            data.add(Time);
+            data.add(Amount);
+            writeToFile("/home/cs144/ebayData/itemData", data);
+
             if(!bidderMap.containsKey(bidderUserID)){
                 bidderMap.put(bidderUserID, 0);
-                bidderCount++;
-
                 // call getBidder here
             }
         }
-        return bidderCount;
-
     }
 	
 
@@ -366,7 +363,7 @@ class MyParser {
 	}
 
 	//TODO: call in getBid
-	static void getBidder(String bidderID, String locationID, Element item) {
+	static void getBidder(String bidderID, String locationID, Element bidderElement) {
 		
 	}
 	
