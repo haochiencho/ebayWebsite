@@ -180,6 +180,20 @@ class MyParser {
         }
     }
 
+	static String convertToSqlDateFormat(String xmlFormattedDate){
+		SimpleDateFormat xmlFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
+		SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
+		String sqlDate = "";
+		
+		try {
+		Date xmlDate = xmlFormat.parse(xmlFormattedDate);
+        sqlDate = sqlDateFormat.format(xmlDate);		
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return sqlDate;
+	}
+	
     //Our helper functions to parse item nodes to form SQL Table 'item'
     static void getItem(Element eElement, int locationID, String sellerID){
         String ItemID = eElement.getAttribute("ItemID");
@@ -194,11 +208,14 @@ class MyParser {
         String First_bid = strip(eElement.getElementsByTagName("First_Bid").item(0).getTextContent());
         String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
         String Location_id = Integer.toString(locationID);
-
-        String Started = eElement.getElementsByTagName("Started").item(0).getTextContent();
-        String Ends = eElement.getElementsByTagName("Ends").item(0).getTextContent();
-        String Seller_id = sellerID;
-
+        
+		String Started_xml = eElement.getElementsByTagName("Started").item(0).getTextContent();
+		String Ends_xml = eElement.getElementsByTagName("Ends").item(0).getTextContent();
+		
+		String Started = convertToSqlDateFormat(Started_xml);
+		String Ends = convertToSqlDateFormat(Started_xml);
+		
+		String Seller_id = sellerID;
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 
         // List of Strings that are added in the order to be printed
@@ -308,7 +325,6 @@ class MyParser {
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
 	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
 	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
-
 
 			ArrayList<String> data = new ArrayList<String>();
 			data.add(itemID);
