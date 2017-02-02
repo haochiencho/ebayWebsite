@@ -164,18 +164,14 @@ class MyParser {
     // Uses the item id from getItem to create multiple categories with the same itemID.
     static void getCategory(String itemID, Element item){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
-            NodeList nodeList = item.getElementsByTagName("Category");
-            for(int i = 0; i < nodeList.getLength(); i++){
-                Node node = nodeList.item(i);
-                if(node.getNodeType() == Node.ELEMENT_NODE){
-                    Element eElement = (Element)node;
-                    String category = eElement.getTextContent();
+            Element[] elementList = getElementsByTagNameNR(item, "Category");
+            for(int i = 0; i < elementList.length; i++){
+				String category = getElementText(elementList[i]);
 
-                    ArrayList<String> data = new ArrayList<String>();
-                    data.add(itemID);
-                    data.add(category);
-                    writeToFile("bin/categoryData.csv", data);
-                }
+				ArrayList<String> data = new ArrayList<String>();
+				data.add(itemID);
+				data.add(category);
+				writeToFile("bin/categoryData.csv", data);                
             }
         }
     }
@@ -199,25 +195,25 @@ class MyParser {
     static void getItem(Element eElement, int locationID, String sellerID){
         String ItemID = eElement.getAttribute("ItemID");
 
-        String Name = eElement.getElementsByTagName("Name").item(0).getTextContent();
-        String Currently = strip(eElement.getElementsByTagName("Currently").item(0).getTextContent());
+        String Name = getElementText(getElementByTagNameNR(eElement, "Name"));
+        String Currently = strip(getElementText(getElementByTagNameNR(eElement, "Currently")));
         String Buy_price = ""; // default for buy price
-        if(eElement.getElementsByTagName("Buy_Price").getLength() > 0) {
-            strip(Buy_price = eElement.getElementsByTagName("Buy_Price").item(0).getTextContent());
+        if(getElementsByTagNameNR(eElement, "Buy_Price").length > 0) {
+            strip(Buy_price = getElementText(getElementByTagNameNR(eElement, "Buy_Price")));
         }
 
-        String First_bid = strip(eElement.getElementsByTagName("First_Bid").item(0).getTextContent());
-        String Number_of_bids = eElement.getElementsByTagName("Number_of_Bids").item(0).getTextContent();
+        String First_bid = strip(getElementText(getElementByTagNameNR(eElement, "First_Bid")));
+        String Number_of_bids = getElementText( getElementByTagNameNR(eElement, "Number_of_Bids") );
         String Location_id = Integer.toString(locationID);
         
-		String Started_xml = eElement.getElementsByTagName("Started").item(0).getTextContent();
-		String Ends_xml = eElement.getElementsByTagName("Ends").item(0).getTextContent();
+		String Started_xml = getElementText( getElementByTagNameNR(eElement, "Started") );
+		String Ends_xml = getElementText( getElementByTagNameNR(eElement, "Ends") );
 		
 		String Started = convertToSqlDateFormat(Started_xml);
 		String Ends = convertToSqlDateFormat(Started_xml);
 		
 		String Seller_id = sellerID;
-        String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
+        String Description = getElementText( getElementByTagNameNR(eElement, "Description") );
 
         // List of Strings that are added in the order to be printed
         ArrayList<String> data = new ArrayList<String>();
@@ -274,7 +270,7 @@ class MyParser {
                     Element eElement = (Element) Item;
 
                     // populates the item table
-                    String location = eElement.getElementsByTagName("Location").item(0).getTextContent();
+                    String location = getElementText( getElementByTagNameNR(eElement, "Location") );
                     int locationID;
                     if(!locationMap.containsKey(location)){
                         locationMap.put(location, locationCount);
@@ -288,7 +284,7 @@ class MyParser {
 					
 					
 					//populates the seller table
-                    Node tempNode = eElement.getElementsByTagName("Seller").item(0);
+                    Node tempNode = getElementByTagNameNR(eElement, "Seller");
                     Element tempElement = (Element)tempNode;
                     String sellerIdStr = tempElement.getAttribute("UserID");
                     if(!sellerMap.containsKey(sellerIdStr)){
@@ -308,16 +304,12 @@ class MyParser {
 					
 					
 					//populates the bid and bidder table
-                    Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
-					NodeList bidList = bids.getElementsByTagName("Bid");
-                    for(int j = 0; j < bidList.getLength(); j++){
-                        Node bid = bidList.item(j);
-                        if (bid.getNodeType() == Node.ELEMENT_NODE){
-                            Element bidElement = (Element) bid;
-                            String bidderID = bidElement.getAttribute("UserID");
-                            getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap, locationMap);
-                            bidCount++;
-                        }
+                    Element bids = (Element) getElementByTagNameNR(eElement, "Bids");
+					Element[] bidElementList = getElementsByTagNameNR(bids, "Bid");
+                    for(int j = 0; j < bidElementList.length; j++){
+						String bidderID = bidElementList[j].getAttribute("UserID");
+						getBid(bidElementList[j], ItemID, Integer.toString(bidCount), bidderMap, locationMap);
+						bidCount++;
                     }
 					
                 }
@@ -328,11 +320,11 @@ class MyParser {
     //Our helper functions to parse bid node to form SQL Table 'bid'
     static void getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, Map<String, Integer> locationMap){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
-	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
-	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
+	        String Time = getElementText( getElementByTagNameNR(bidElement, "Time") );
+	        String Amount = strip( getElementText(getElementByTagNameNR(bidElement, "Amount")) );
 
 
-            Element bidderElement = (Element)bidElement.getElementsByTagName("Bidder").item(0);
+            Element bidderElement = (Element) getElementByTagNameNR( bidElement, "Bidder");
             String bidderUserID = bidderElement.getAttribute("UserID");
 
             ArrayList<String> data = new ArrayList<String>();
@@ -354,7 +346,7 @@ class MyParser {
     //Our helper functions to parse item nodes for their sellers to form SQL Table 'seller'
     static void getSeller(Element item) {
 		if (item.getNodeType() == Node.ELEMENT_NODE) {
-			Node sellerNode = item.getElementsByTagName("Seller").item(0);
+			Node sellerNode = getElementByTagNameNR( item, "Seller");
 			if (sellerNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) sellerNode;
 				String sellerID = eElement.getAttribute("UserID");
@@ -372,9 +364,9 @@ class MyParser {
 	static void getBidder(String bidderID, Element bidderElement, Map<String, Integer> locationMap){
 		String rating = bidderElement.getAttribute("Rating");
         String locationID = "";
-		if(bidderElement.getElementsByTagName("Location").getLength() > 0) {
-            Element locationElement = (Element) bidderElement.getElementsByTagName("Location").item(0);
-            locationID = locationElement.getTextContent();
+		if( getElementsByTagNameNR( bidderElement, "Location").length > 0) {
+            Element locationElement = (Element) getElementByTagNameNR( bidderElement, "Location");
+            locationID = getElementText( locationElement );
             if(!locationMap.containsKey(locationID)){
                 locationMap.put(locationID, 0);
                 getLocation(locationID, bidderElement);
@@ -395,15 +387,15 @@ class MyParser {
 	//Uses the location id from getData
     static void getLocation(String locationID, Element item) {
 		if (item.getNodeType() == Node.ELEMENT_NODE) {
-			Node locationNode = item.getElementsByTagName("Location").item(0);
+			Node locationNode = getElementByTagNameNR( item, "Location");
 			if (locationNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) locationNode;
-				String location = eElement.getTextContent();
+				String location = getElementText(eElement);
 				String latitude = eElement.getAttribute("Latitude");
 				String longitude = eElement.getAttribute("Longitude");
                 String country = "";
-                if(item.getElementsByTagName("Country").getLength() > 0) {
-                    country = item.getElementsByTagName("Country").item(0).getTextContent();
+                if( getElementsByTagNameNR( item, "Country").length > 0) {
+                    country = getElementText( getElementByTagNameNR( item, "Country") );
                 }
 
 
