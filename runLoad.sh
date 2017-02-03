@@ -9,9 +9,10 @@ mysql CS144 < create.sql
 # Delete any csv files prior to running
 rm *.csv
 
+
 # Compile and run the parser to generate the appropriate load files
 ant
-ant run #change to run-all prior to submission
+ant run-all #change to run-all prior to submission
 
 # sort get unique inputs
 #sort -u 'sellerData.csv' -o 'sellerData.csv'
