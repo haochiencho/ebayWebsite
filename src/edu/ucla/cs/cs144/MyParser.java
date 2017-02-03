@@ -184,10 +184,9 @@ class MyParser {
 		SimpleDateFormat xmlFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
 		SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
 		String sqlDate = "";
-		
 		try {
 		Date xmlDate = xmlFormat.parse(xmlFormattedDate);
-        sqlDate = sqlDateFormat.format(xmlDate);		
+        sqlDate = sqlDateFormat.format(xmlDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -229,7 +228,7 @@ class MyParser {
         data.add(Started);
         data.add(Ends);
         data.add(sellerID);
-        data.add(Description);
+        data.add(Description.substring(0, Math.min(4000, Description.length())));
         writeToFile("itemData.csv", data);
     }
 
@@ -244,7 +243,6 @@ class MyParser {
             }
         }
 
-        //System.out.println(str.toString());
         // append string to file and create file if file doesnt
         try{
             FileWriter fw = new FileWriter(fileName, true);
@@ -282,7 +280,6 @@ class MyParser {
                     if(!sellerMap.containsKey(sellerIdStr)){
                         sellerMap.put(sellerIdStr, 0);
                         // call getSeller here
-                        //System.out.println(sellerIdStr);
 						getSeller(eElement);						
                     }
 					
