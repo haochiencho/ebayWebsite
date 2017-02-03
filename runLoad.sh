@@ -12,13 +12,13 @@ rm *.csv
 
 # Compile and run the parser to generate the appropriate load files
 ant
-ant run-all #change to run-all prior to submission
+ant run-all
 
 # sort get unique inputs
-#sort -u 'sellerData.csv' -o 'sellerData.csv'
-#sort -u 'bidData.csv' -o 'bidData.csv'
-#sort -u 'bidderData.csv' -o 'bidderData.csv'
-#sort -u 'categoryData.csv' -o 'categoryData.csv'
+sort -u 'sellerData.csv' -o 'sellerData.csv'
+sort -u 'bidData.csv' -o 'bidData.csv'
+sort -u 'bidderData.csv' -o 'bidderData.csv'
+sort -u 'categoryData.csv' -o 'categoryData.csv'
 #sort -u 'itemData.csv' -o 'itemData.csv'
 #sort -u 'locationData.csv' -o 'locationData.csv'
 
@@ -26,4 +26,4 @@ ant run-all #change to run-all prior to submission
 mysql CS144 < load.sql
 
 # Remove all temporary files
-#rm *.csv
+rm *.csv

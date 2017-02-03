@@ -254,15 +254,15 @@ class MyParser {
         }
     }
 
-    static void getData(Document doc){
+    static int[] getData(Document doc, int locationCount, int bidCount){
         Map<String, Integer> sellerMap = new HashMap<String, Integer>();
         Map<String, Integer> bidderMap = new HashMap<String, Integer>();
+        int[] anArray = new int[2];
 
         if (doc.hasChildNodes()) {
             NodeList nodeList = doc.getElementsByTagName("Item");
-            int locationCount = 1;
-            int sellerCount = 1;
-            int bidCount = 1;
+
+
             for(int i = 0; i < nodeList.getLength(); i++){
                 Node Item = nodeList.item(i);
                 if (Item.getNodeType() == Node.ELEMENT_NODE) {
@@ -309,6 +309,9 @@ class MyParser {
                 }
             }
         }
+        anArray[0] = locationCount;
+        anArray[1] = bidCount;
+        return anArray;
     }
 
     //Our helper functions to parse bid node to form SQL Table 'bid'
@@ -401,8 +404,9 @@ class MyParser {
 
     /* Process one items-???.xml file.
      */
-    static void processFile(File xmlFile) {
+    static int[] processFile(File xmlFile, int locationCount, int bidCount) {
         Document doc = null;
+
         try {
             doc = builder.parse(xmlFile);
         }
@@ -429,12 +433,18 @@ class MyParser {
 
             //Root elemnt should be 'Items'
             //System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
-            getData(doc);
+            int[] anArray = getData(doc, locationCount, bidCount);
+            locationCount = anArray[0];
+            bidCount = anArray[1];
+            return anArray;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         /**************************************************************/
+        int[] arr = new int[1];
+        arr[0] = 0;
+        return arr;
 
     }
 
@@ -443,7 +453,9 @@ class MyParser {
             System.out.println("Usage: java MyParser [file] [file] ...");
             System.exit(1);
         }
-        
+        int locationCount = 1;
+        int bidCount = 1;
+
         /* Initialize parser. */
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -464,7 +476,9 @@ class MyParser {
         /* Process all files listed on command line. */
         for (int i = 0; i < args.length; i++) {
             File currentFile = new File(args[i]);
-            processFile(currentFile);
+            int[] anArray = processFile(currentFile, locationCount, bidCount);
+            locationCount = anArray[0];
+            bidCount = anArray[1];
         }
 
     }
