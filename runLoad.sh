@@ -7,7 +7,7 @@ mysql CS144 < drop.sql
 mysql CS144 < create.sql
 
 # Delete any csv files prior to running
-rm *.csv
+rm -f *.csv
 
 
 # Compile and run the parser to generate the appropriate load files
