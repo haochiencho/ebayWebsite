@@ -28,6 +28,31 @@ public class Indexer {
     public Indexer() {
     }
  
+    private IndexWriter indexWriter = null;
+
+    public IndexWriter getIndexWriter(boolean create) throws IOException {
+        if (indexWriter == null) {
+            Directory indexDir = FSDirectory.open(new File("/var/lib/lucene/")); //TODO: Check that this path is correct
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+            indexWriter = new IndexWriter(indexDir, config);
+        }
+        return indexWriter;
+    }
+
+    public void closeIndexWriter() throws IOException {
+        if (indexWriter != null) {
+            indexWriter.close();
+        }
+    }
+
+    public void indexItem(Item item) throws IOException { //TODO: Choose what fields Item will be indexed on
+	IndexWriter wrter = getIndexWriter(false);
+	Document doc = new Document();
+	doc.add(new StringField("id", item.getId(), Field.Store.YES));
+	writer.addDocument(doc);
+    }
+
+
     public void rebuildIndexes() {
 
         Connection conn = null;
