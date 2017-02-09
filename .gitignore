@@ -1,0 +1,5 @@
+# Compiled source #
+*.class
+
+# Input Ebay data #
+*.csv
