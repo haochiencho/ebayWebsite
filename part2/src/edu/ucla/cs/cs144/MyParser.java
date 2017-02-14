@@ -162,9 +162,12 @@ class MyParser {
 
 	//Our helper functions to parse item nodes for their catgories to form SQL Table 'category'
     // Uses the item id from getItem to create multiple categories with the same itemID.
+    // Also adds an item to categoryList
     static void getCategory(String itemID, Element item){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             NodeList nodeList = item.getElementsByTagName("Category");
+            ArrayList<String> categoryList = new ArrayList();
+            StringBuilder categoryListStr = new StringBuilder();
             for(int i = 0; i < nodeList.getLength(); i++){
                 Node node = nodeList.item(i);
                 if(node.getNodeType() == Node.ELEMENT_NODE){
@@ -175,8 +178,15 @@ class MyParser {
                     data.add(itemID);
                     data.add(category);
                     writeToFile("categoryData.csv", data);
+
+                    if(categoryList.size() == 0){
+                        categoryList.add(itemID);
+                    }
+                    categoryListStr.append(category + " ");
                 }
             }
+            categoryList.add(categoryListStr.toString());
+            writeToFile("categoryListData.csv", categoryList);
         }
     }
 
