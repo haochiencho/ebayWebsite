@@ -1,4 +1,5 @@
 package edu.ucla.cs.cs144;
+import edu.ucla.cs.cs144.Item;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -48,7 +49,7 @@ public class Indexer {
     public void indexItem(Item item) throws IOException { //TODO: Choose what fields Item will be indexed on
         IndexWriter writer = getIndexWriter(false);
         Document doc = new Document();
-        doc.add(new StringField("itemId", item.getId(), Field.Store.YES));
+        doc.add(new StringField("itemID", item.getItemID(), Field.Store.YES));
         doc.add(new TextField("name", item.getName(), Field.Store.YES));
         doc.add(new TextField("category", item.getCategory(), Field.Store.YES));
         doc.add(new TextField("description", item.getDescription(), Field.Store.YES));
@@ -88,25 +89,36 @@ public class Indexer {
          * and place your class source files at src/edu/ucla/cs/cs144/.
 	 * 
 	 */
-	
-	getIndexWriter(true);
+	try {
+        getIndexWriter(true);
+    } catch (IOException exception) {
+        exception.printStackTrace();
+        System.exit(-1);
+    }
+
+    /*	try {
+	    conn = DbManager.getConnection(true);
+	} catch (SQLException ex) {
+	    System.out.println(ex);
+	}*/
 	// Item[] items =
 	Integer itemID; 
 	String name, category, description;
-	Statement stmt = conn.createStatement();
-        try {
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM Item JOIN Category on Item.itemID=Category.itemID");
+    try {    
+    	Statement stmt = conn.createStatement();
+	    //ResultSet rs = stmt.executeQuery("SELECT * FROM item JOIN categoryList on item.itemID=categoryList.itemID"); TODO:
+        ResultSet rs = stmt.executeQuery("SELECT * FROM item"); 
 	    
 	    while (rs.next()) {
             itemID = rs.getInt("itemID");
             name = rs.getString("name");
-            //category = rs.getString("category");
-            category = category + + + 
+            //category = rs.getString("category"); //TODO: Get categoryList from new categoryList table
+            category = ""; 
             description = rs.getString("description"); 
 
-            Item item = new Item(itemID, name, category, description);
+            Item item = new Item(Integer.toString(itemID), name, category, description);
             indexItem(item);
-            System.out.println("ItemID: " + Integer.toString(itemID));
+            //System.out.println("ItemID: " + Integer.toString(itemID));
 	    }
 
         stmt.close();
@@ -115,8 +127,17 @@ public class Indexer {
 	catch (SQLException ex) {
 	    System.err.println("SQLException: " + ex.getMessage());
 	}
+    catch (IOException exception) {
+        exception.printStackTrace();
+        System.exit(-1);      
+    }
 
-	closeIndexWriter();
+    try {
+	    closeIndexWriter();
+    } catch (IOException exception) {
+        exception.printStackTrace();
+        System.exit(-1);      
+    }
 
         // close the database connection
 	try {
