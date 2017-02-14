@@ -33,6 +33,8 @@ import edu.ucla.cs.cs144.DbManager;
 import edu.ucla.cs.cs144.SearchRegion;
 import edu.ucla.cs.cs144.SearchResult;
 
+import edu.ucla.cs.cs144.SearchEngine;
+
 public class AuctionSearch implements IAuctionSearch {
 
 	/* 
@@ -53,6 +55,44 @@ public class AuctionSearch implements IAuctionSearch {
 	public SearchResult[] basicSearch(String query, int numResultsToSkip, 
 			int numResultsToReturn) {
 		// TODO: Your code here!
+		
+		// instantiate the search engine
+		try {
+			SearchEngine se = new SearchEngine();
+
+			// retrieve top matching document list for the query
+			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
+			TopDocs topDocs = se.performSearch(query, 100); 
+
+			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
+			ScoreDoc[] hits = topDocs.scoreDocs;
+
+			// retrieve each matching document from the ScoreDoc array
+			int resultCount = 0;
+			/*
+			SearchResult[] resultArray = new SearchResult[numResultsToReturn];	
+			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn; i++) { //TODO: potential off-by-one error?
+				Document doc = se.getDocument(hits[i].doc);
+				resultArray[resultCount] = new SearchResult(Integer.toString(hits[i].doc), doc.get("name"));
+				resultCount++;
+				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
+			}
+			*/
+
+			SearchResult[] resultArray = new SearchResult[hits.length];	
+			for (int i = 0; i < hits.length; i++) { 
+				Document doc = se.getDocument(hits[i].doc);
+				resultArray[resultCount] = new SearchResult(Integer.toString(hits[i].doc), doc.get("name"));
+				resultCount++;
+				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
+			}
+			return resultArray;
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+        	System.exit(-1); 
+		}	
+
 		return new SearchResult[0];
 	}
 

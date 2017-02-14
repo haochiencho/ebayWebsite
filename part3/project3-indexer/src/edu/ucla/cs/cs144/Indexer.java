@@ -51,8 +51,8 @@ public class Indexer {
         Document doc = new Document();
         doc.add(new StringField("itemID", item.getItemID(), Field.Store.YES));
         doc.add(new TextField("name", item.getName(), Field.Store.YES));
-        doc.add(new TextField("category", item.getCategory(), Field.Store.YES));
-        doc.add(new TextField("description", item.getDescription(), Field.Store.YES));
+        doc.add(new TextField("category", item.getCategory(), Field.Store.NO));
+        doc.add(new TextField("description", item.getDescription(), Field.Store.NO));
         String fullSearchableText = item.getName() + " " + item.getCategory() + " " + item.getDescription();
         doc.add(new TextField("content", fullSearchableText, Field.Store.NO));
         writer.addDocument(doc);
