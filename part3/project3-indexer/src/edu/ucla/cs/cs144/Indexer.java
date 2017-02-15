@@ -37,7 +37,7 @@ public class Indexer {
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             indexWriter = new IndexWriter(indexDir, config);
             if(create){
-				indexWriter.deleteAll();
+				indexWriter.deleteAll(); // deletes previous index
 				indexWriter.commit();
 			}
         }
