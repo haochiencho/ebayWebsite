@@ -24,16 +24,16 @@ public class AuctionSearchTest {
 			System.out.println(result.getItemId() + ": " + result.getName());
 		}
 		
-		String query = "kitchenware";
-		SearchResult[] basicResults = as.basicSearch(query, 0, 20);
+		query = "kitchenware";
+		basicResults = as.basicSearch(query, 0, 20);
 		System.out.println("Basic Seacrh Query: " + query);
 		System.out.println("Received " + basicResults.length + " results");
 		for(SearchResult result : basicResults) {
 			System.out.println(result.getItemId() + ": " + result.getName());
 		}
 
-		String query = "star trek";
-		SearchResult[] basicResults = as.basicSearch(query, 0, 20);
+		query = "star trek";
+		basicResults = as.basicSearch(query, 0, 20);
 		System.out.println("Basic Seacrh Query: " + query);
 		System.out.println("Received " + basicResults.length + " results");
 		for(SearchResult result : basicResults) {
