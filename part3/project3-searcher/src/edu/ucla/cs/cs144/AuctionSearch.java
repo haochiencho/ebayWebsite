@@ -109,14 +109,16 @@ public class AuctionSearch implements IAuctionSearch {
 			System.out.println(ex);
 		}
 
+		ArrayList<SearchResult> searchResultList = new ArrayList<SearchResult>();
+
 		try {
 		//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?			
-			String searchRectangle = "Polygon((" +
-										region.lx + region.ly + "," +
-										region.rx + region.ly + "," + 
-										region.rx + region.ry + "," +
-										region.lx + region.ry + "," +
-										region.lx + region.ly + "))";
+			String searchRectangle = "GeomFromText(' Polygon((" +
+										region.getLx()+ region.getLy() + "," +
+										region.getRx() + region.getRy() + "," +
+										region.getRx() + region.getRy() + "," +
+										region.getLx() + region.getRy() + "," +
+										region.getLx() + region.getLy() + "))')";
 			Statement stmt = conn.createStatement();
 		    ResultSet rs = stmt.executeQuery("SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)");
 
@@ -124,8 +126,10 @@ public class AuctionSearch implements IAuctionSearch {
 			String coords;
 			while (rs.next()) {
 				itemID = rs.getInt("itemID");
-				lan = rs.get("coords");
+				coords = rs.getString("coords");
 				System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
+				searchResultList.add(new SearchResult(Integer.toString(itemID), coords));
+
 	   		}
 
 			stmt.close();
@@ -142,7 +146,14 @@ public class AuctionSearch implements IAuctionSearch {
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		}
-		return new SearchResult[0];
+
+
+		SearchResult[] resultArray = new SearchResult[searchResultList.size()];
+		for(int i = 0; i < searchResultList.size(); i++){
+			resultArray[i] = searchResultList.get(i);
+		}
+
+		return resultArray;
 	}
 
 	public String getXMLDataForItemId(String itemId) {
