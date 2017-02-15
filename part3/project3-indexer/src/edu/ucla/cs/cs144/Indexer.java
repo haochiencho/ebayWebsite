@@ -36,6 +36,10 @@ public class Indexer {
             Directory indexDir = FSDirectory.open(new File("/var/lib/lucene/")); //TODO: Check that this path is correct
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             indexWriter = new IndexWriter(indexDir, config);
+            if(create){
+				indexWriter.deleteAll();
+				indexWriter.commit();
+			}
         }
         return indexWriter;
     }
@@ -61,7 +65,7 @@ public class Indexer {
 
     public void rebuildIndexes() {
 
-        Connection conn = null;
+    	Connection conn = null;
 
         // create a connection to the database to retrieve Items from MySQL
 	try {
@@ -106,15 +110,13 @@ public class Indexer {
 	String name, category, description;
     try {    
     	Statement stmt = conn.createStatement();
-	    //ResultSet rs = stmt.executeQuery("SELECT * FROM item JOIN categoryList on item.itemID=categoryList.itemID"); TODO:
-        ResultSet rs = stmt.executeQuery("SELECT * FROM item"); 
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM item JOIN categoryList on item.itemID=categoryList.itemID");
 	    
 	    while (rs.next()) {
             itemID = rs.getInt("itemID");
             name = rs.getString("name");
-            //category = rs.getString("category"); //TODO: Get categoryList from new categoryList table
-            category = ""; 
-            description = rs.getString("description"); 
+            category = rs.getString("categoryList"); //TODO: Get categoryList from new categoryList table
+            description = rs.getString("description");
 
             Item item = new Item(Integer.toString(itemID), name, category, description);
             indexItem(item);

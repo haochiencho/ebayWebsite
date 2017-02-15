@@ -62,7 +62,7 @@ public class AuctionSearch implements IAuctionSearch {
 
 			// retrieve top matching document list for the query
 			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
-			TopDocs topDocs = se.performSearch(query, 100); 
+			TopDocs topDocs = se.performSearch(query, 2000);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 			ScoreDoc[] hits = topDocs.scoreDocs;
