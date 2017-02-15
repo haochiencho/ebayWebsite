@@ -113,12 +113,14 @@ public class AuctionSearch implements IAuctionSearch {
 
 		try {
 		//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?			
-			String searchRectangle = "GeomFromText(' Polygon((" +
-										region.getLx()+ region.getLy() + "," +
-										region.getRx() + region.getRy() + "," +
-										region.getRx() + region.getRy() + "," +
-										region.getLx() + region.getRy() + "," +
-										region.getLx() + region.getLy() + "))')";
+			String searchRectangle = "PointFromText('Polygon((" +
+										region.getLx() + " " + region.getLy() + "," +
+										region.getRx() + " " + region.getLy() + "," +
+										region.getRx() + " " + region.getRy() + "," +
+										region.getLx() + " " + region.getRy() + "," +
+										region.getLx() + " " + region.getLy() + "))')";
+			String example = "PointFromText('Polygon((-200 -200,-200 200,200 200,200 -200,-200 -200))')";
+			System.out.println(searchRectangle);
 			Statement stmt = conn.createStatement();
 		    ResultSet rs = stmt.executeQuery("SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)");
 
