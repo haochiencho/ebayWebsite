@@ -112,6 +112,8 @@ public class AuctionSearch implements IAuctionSearch {
 		ArrayList<SearchResult> searchResultList = new ArrayList<SearchResult>();
 
 		try {
+			// TODO: intersect spatial query results with basic query
+
 		//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?			
 			String searchRectangle = "PointFromText('Polygon((" +
 										region.getLx() + " " + region.getLy() + "," +
@@ -122,14 +124,22 @@ public class AuctionSearch implements IAuctionSearch {
 			String example = "PointFromText('Polygon((-200 -200,-200 200,200 200,200 -200,-200 -200))')";
 			System.out.println(searchRectangle);
 			Statement stmt = conn.createStatement();
-		    ResultSet rs = stmt.executeQuery("SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)");
+
+			SearchEngine se = new SearchEngine();
+
+			// retrieve top matching document list for the query
+			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
+			TopDocs topDocs = se.performSearch(query, 2000);
+			String spatialQuery = "SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)";
+			System.out.println(spatialQuery);
+			ResultSet rs = stmt.executeQuery(spatialQuery);
 
 			Integer itemID; 
 			String coords;
 			while (rs.next()) {
 				itemID = rs.getInt("itemID");
 				coords = rs.getString("coords");
-				System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
+				//System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
 				searchResultList.add(new SearchResult(Integer.toString(itemID), coords));
 
 	   		}
