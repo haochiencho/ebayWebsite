@@ -78,7 +78,7 @@ public class AuctionSearch implements IAuctionSearch {
 				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
 			}
 			*/
-
+			
 			SearchResult[] resultArray = new SearchResult[hits.length];	
 			for (int i = 0; i < hits.length; i++) { 
 				Document doc = se.getDocument(hits[i].doc);
@@ -86,6 +86,7 @@ public class AuctionSearch implements IAuctionSearch {
 				resultCount++;
 				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
 			}
+			
 			return resultArray;
 
 		} catch (Exception exception) {
@@ -99,6 +100,48 @@ public class AuctionSearch implements IAuctionSearch {
 	public SearchResult[] spatialSearch(String query, SearchRegion region,
 			int numResultsToSkip, int numResultsToReturn) {
 		// TODO: Your code here!
+
+		// Create a connection to the database to retrieve Items from Spatial Index
+		Connection conn = null;
+		try {
+			conn = DbManager.getConnection(true);
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		}
+
+		try {
+		//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?			
+			String searchRectangle = "Polygon((" +
+										region.lx + region.ly + "," +
+										region.rx + region.ly + "," + 
+										region.rx + region.ry + "," +
+										region.lx + region.ry + "," +
+										region.lx + region.ly + "))";
+			Statement stmt = conn.createStatement();
+		    ResultSet rs = stmt.executeQuery("SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)");
+
+			Integer itemID; 
+			String coords;
+			while (rs.next()) {
+				itemID = rs.getInt("itemID");
+				lan = rs.get("coords");
+				System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
+	   		}
+
+			stmt.close();
+			rs.close();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+        	System.exit(-1); 			
+		}
+
+		// Close the database connection
+		try {
+			conn.close();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		}
 		return new SearchResult[0];
 	}
 
