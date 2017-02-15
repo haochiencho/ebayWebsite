@@ -5,4 +5,4 @@ DROP TABLE IF EXISTS `item`;
 DROP TABLE IF EXISTS `location`;
 DROP TABLE IF EXISTS `seller`;
 DROP TABLE IF EXISTS `categoryList`;
-
+DROP TABLE IF EXISTS `geoLocation`;

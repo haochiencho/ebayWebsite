@@ -373,7 +373,7 @@ class MyParser {
             getLocation(locationID, bidderElement);
 			getLocationFuncIsCalled = true;
         }
-	
+
 		ArrayList<String> data = new ArrayList<String>();
 		data.add(bidderID);
 		data.add(rating);
@@ -398,6 +398,14 @@ class MyParser {
                     country = item.getElementsByTagName("Country").item(0).getTextContent();
                 }
 
+                ArrayList<String> geoLocation = new ArrayList();
+                String ItemID = item.getAttribute("ItemID");
+                geoLocation.add(ItemID);
+                geoLocation.add(longitude);
+                geoLocation.add(latitude);
+                if(longitude != "" && latitude != "") {
+                    writeToFile("geoLocationData.csv", geoLocation);
+                }
 
 				ArrayList<String> data = new ArrayList<String>();
 				data.add(Integer.toString(locationID));
@@ -406,8 +414,6 @@ class MyParser {
 				data.add(latitude);				
 				data.add(country);
 				writeToFile("locationData.csv", data);
-				
-
 		}
     }
 	
