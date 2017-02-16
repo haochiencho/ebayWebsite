@@ -113,7 +113,7 @@ public class Indexer {
 	    ResultSet rs = stmt.executeQuery("SELECT * FROM item JOIN categoryList on item.itemID=categoryList.itemID");
 	    
 	    while (rs.next()) {
-            itemID = rs.getInt("itemID");
+            itemID = rs.getInt("itemID"); //TODO: Maybe have a handler if for some bizarre reason itemID is null
             
             name = rs.getString("name");
             if (name == null)

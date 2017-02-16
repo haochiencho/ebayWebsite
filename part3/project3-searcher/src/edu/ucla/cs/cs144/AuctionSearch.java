@@ -233,7 +233,8 @@ public class AuctionSearch implements IAuctionSearch {
 			System.out.println(itemQuery);
 			ResultSet rs = stmt.executeQuery(itemQuery);
 
-			while (rs.next()) {
+			if ( rs.isBeforeFirst() ) { //is the result non-empty?
+				rs.first();
 				String itemID = Integer.toString(rs.getInt("itemID"));
 				String description = rs.getString("description");
 				String currently = Double.toString(rs.getDouble("currently"));
@@ -248,26 +249,45 @@ public class AuctionSearch implements IAuctionSearch {
 
 				String started = convertToXmlDateFormat(rs.getTimestamp("started"));
 				String ends = convertToXmlDateFormat(rs.getTimestamp("ends"));
-				//System.out.println("Timestamps: " + started + ", " + ends);
-
+				System.out.println("Timestamps: " + started + ", " + ends);
+				
 				// TODO: tokenize category and bid
 				// format into XML
 				// check all tokens
+
+				ResultSet rsCategory = stmt.executeQuery(categoryQuery);
+				while (rsCategory.next()) {
+					String category = rsCategory.getString("category");
+					System.out.println("Category: " + category);
+				}
+
+				ResultSet rsBid = stmt.executeQuery(bidQuery);
+				while (rsBid.next()) {
+					String bidderRating = Integer.toString(rsBid.getInt("rating"));					
+					String bidderID = rsBid.getString("bidderID");
+					String bidderLocation = rsBid.getString("location");
+					String bidderCountry = rsBid.getString("country");
+					String bidTime = convertToXmlDateFormat(rsBid.getTimestamp("bidTime"));
+					String bidAmount = Integer.toString(rsBid.getInt("bidTime"));
+					System.out.println("Bid: " + bidderRating + ", " + bidderLocation + ", " + bidderCountry +
+										", " + bidTime + ", " + bidAmount);
+				}
 
 				System.out.println(itemID);
 				if(isNull(description))
 					System.out.println(description);
 				System.out.println(currently);
 				System.out.println("here");
-
 			}
 
-			rs = stmt.executeQuery(categoryQuery);
-			rs = stmt.executeQuery(bidQuery);
+			//rs = stmt.executeQuery(categoryQuery);
+			//rs = stmt.executeQuery(bidQuery);
 
 			//TODO: Fill in xmlResult string
+			rs.close();			
 			stmt.close();
-			rs.close();
+
+
 		} catch (Exception exception) {
 			exception.printStackTrace();
         	System.exit(-1); 
@@ -287,7 +307,6 @@ public class AuctionSearch implements IAuctionSearch {
 		return message;
 	}
 
-	// TODO: convert sql timedate to xml timedate format
 	public String convertToXmlDateFormat(Timestamp javaTimeStamp) {
 		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
 		String xmlDateString = "";
