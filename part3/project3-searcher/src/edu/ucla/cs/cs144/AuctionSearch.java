@@ -202,7 +202,40 @@ public class AuctionSearch implements IAuctionSearch {
 
 	public String getXMLDataForItemId(String itemId) {
 		// TODO: Your code here!
-		return "";
+
+		// Create a connection to the database to retrieve Items from Spatial Index
+		Connection conn = null;	
+		try {
+			conn = DbManager.getConnection(true);
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		}	
+
+		String xmlResult = "";
+		//TODO: Do mySQL query over all tables to get all item information
+		String query = "SELECT * FROM item WHERE itemID=" + itemId;
+
+		try {
+			Statement stmt = conn.createStatement();
+			System.out.println(query);
+			ResultSet rs = stmt.executeQuery(query);
+
+			//TODO: Fill in xmlResult string
+			stmt.close();
+			rs.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+        	System.exit(-1); 
+		}
+
+		// Close the database connection
+		try {
+			conn.close();
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		}
+
+		return xmlResult;
 	}
 	
 	public String echo(String message) {
