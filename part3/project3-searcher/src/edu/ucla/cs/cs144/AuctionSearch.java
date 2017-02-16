@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.sun.jmx.snmp.Timestamp;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -243,12 +242,17 @@ public class AuctionSearch implements IAuctionSearch {
 				String buyPrice = Double.toString(rs.getDouble("buyPrice"));
 				String firstBid = Double.toString(rs.getDouble("firstBid"));
 				String numberOfBids = Integer.toString(rs.getInt("numberOfBids"));
-				// TODO: convert sql timedate to xml timedate format
-//				String started = convertToXmlDateFormat(rs.getTimestamp("started"));
-//				String ends = convertToXmlDateFormat(rs.getDate("ends"));
 				String sellerID = Integer.toString(rs.getInt("sellerID"));
 				String Rating = Integer.toString(rs.getInt("rating"));
 
+				SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				// TODO: convert sql timedate to xml timedate format
+				String startedSQL = sqlDateFormat.format(rs.getTimestamp("started"));
+				String endsSQL = sqlDateFormat.format(rs.getTimestamp("ends"));
+
+				String started = convertToXmlDateFormat(startedSQL);
+				String ends = convertToXmlDateFormat(endsSQL);
+				
 				// TODO: tokenize category and bid
 				// format into XML
 				// check all tokens
@@ -270,7 +274,7 @@ public class AuctionSearch implements IAuctionSearch {
 		} catch (Exception exception) {
 			exception.printStackTrace();
         	System.exit(-1); 
-		}
+		} 
 
 		// Close the database connection
 		try {
@@ -287,16 +291,18 @@ public class AuctionSearch implements IAuctionSearch {
 	}
 
 	// TODO: convert sql timedate to xml timedate format
-	public String convertToXmlDateFormat(Timestamp sqlFormattedDate){
+	public String convertToXmlDateFormat(String sqlFormattedDate) {
 		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
 		SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
-		String xmlDate = "";
+		String xmlDateString = "";
+
 		try {
-			xmlDate = xmlDateFormat.format(sqlFormattedDate);
+			Date sqlDate = sqlDateFormat.parse(sqlFormattedDate);
+			xmlDateString = xmlDateFormat.format(sqlDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return xmlDate;
+		return xmlDateString;
 	}
 
 }

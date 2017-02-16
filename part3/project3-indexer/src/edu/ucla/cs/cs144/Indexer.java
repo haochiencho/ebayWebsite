@@ -114,9 +114,18 @@ public class Indexer {
 	    
 	    while (rs.next()) {
             itemID = rs.getInt("itemID");
+            
             name = rs.getString("name");
+            if (name == null)
+                name = "";
+
             category = rs.getString("categoryList"); //TODO: Get categoryList from new categoryList table
+            if (category == null)
+                category = "";
+
             description = rs.getString("description");
+            if (description == null)
+                description = "";
 
             Item item = new Item(Integer.toString(itemID), name, category, description);
             indexItem(item);
