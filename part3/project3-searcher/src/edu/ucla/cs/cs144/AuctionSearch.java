@@ -35,6 +35,7 @@ import edu.ucla.cs.cs144.SearchRegion;
 import edu.ucla.cs.cs144.SearchResult;
 
 import edu.ucla.cs.cs144.SearchEngine;
+import java.sql.Timestamp;
 
 public class AuctionSearch implements IAuctionSearch {
 
@@ -242,17 +243,13 @@ public class AuctionSearch implements IAuctionSearch {
 				String buyPrice = Double.toString(rs.getDouble("buyPrice"));
 				String firstBid = Double.toString(rs.getDouble("firstBid"));
 				String numberOfBids = Integer.toString(rs.getInt("numberOfBids"));
-				String sellerID = Integer.toString(rs.getInt("sellerID"));
-				String Rating = Integer.toString(rs.getInt("rating"));
+				String sellerID = rs.getString("sellerID");
+				String rating = Integer.toString(rs.getInt("rating"));
 
-				SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				// TODO: convert sql timedate to xml timedate format
-				String startedSQL = sqlDateFormat.format(rs.getTimestamp("started"));
-				String endsSQL = sqlDateFormat.format(rs.getTimestamp("ends"));
+				String started = convertToXmlDateFormat(rs.getTimestamp("started"));
+				String ends = convertToXmlDateFormat(rs.getTimestamp("ends"));
+				//System.out.println("Timestamps: " + started + ", " + ends);
 
-				String started = convertToXmlDateFormat(startedSQL);
-				String ends = convertToXmlDateFormat(endsSQL);
-				
 				// TODO: tokenize category and bid
 				// format into XML
 				// check all tokens
@@ -291,17 +288,10 @@ public class AuctionSearch implements IAuctionSearch {
 	}
 
 	// TODO: convert sql timedate to xml timedate format
-	public String convertToXmlDateFormat(String sqlFormattedDate) {
+	public String convertToXmlDateFormat(Timestamp javaTimeStamp) {
 		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
-		SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
 		String xmlDateString = "";
-
-		try {
-			Date sqlDate = sqlDateFormat.parse(sqlFormattedDate);
-			xmlDateString = xmlDateFormat.format(sqlDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		xmlDateString = xmlDateFormat.format(javaTimeStamp);
 		return xmlDateString;
 	}
 
