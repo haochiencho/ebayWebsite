@@ -3,6 +3,7 @@ package edu.ucla.cs.cs144;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.File;
+import java.util.*;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -103,6 +104,10 @@ public class AuctionSearch implements IAuctionSearch {
 
 		// Create a connection to the database to retrieve Items from Spatial Index
 		Connection conn = null;
+
+		// set of item ids from spatial query
+		Set<Integer> spatialItemID = new HashSet<Integer>();
+
 		try {
 			conn = DbManager.getConnection(true);
 		} catch (SQLException ex) {
@@ -112,9 +117,8 @@ public class AuctionSearch implements IAuctionSearch {
 		ArrayList<SearchResult> searchResultList = new ArrayList<SearchResult>();
 
 		try {
-			// TODO: intersect spatial query results with basic query
 
-		//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?			
+			//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?
 			String searchRectangle = "PointFromText('Polygon((" +
 										region.getLx() + " " + region.getLy() + "," +
 										region.getRx() + " " + region.getLy() + "," +
@@ -125,11 +129,6 @@ public class AuctionSearch implements IAuctionSearch {
 			System.out.println(searchRectangle);
 			Statement stmt = conn.createStatement();
 
-			SearchEngine se = new SearchEngine();
-
-			// retrieve top matching document list for the query
-			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
-			TopDocs topDocs = se.performSearch(query, 2000);
 			String spatialQuery = "SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)";
 			System.out.println(spatialQuery);
 			ResultSet rs = stmt.executeQuery(spatialQuery);
@@ -139,13 +138,47 @@ public class AuctionSearch implements IAuctionSearch {
 			while (rs.next()) {
 				itemID = rs.getInt("itemID");
 				coords = rs.getString("coords");
+				spatialItemID.add(itemID);
 				//System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
-				searchResultList.add(new SearchResult(Integer.toString(itemID), coords));
 
 	   		}
 
-			stmt.close();
+	   		stmt.close();
 			rs.close();
+
+			// basic query
+			SearchEngine se = new SearchEngine();
+
+			// retrieve top matching document list for the query
+			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
+			TopDocs topDocs = se.performSearch(query, 2000);
+
+			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
+			ScoreDoc[] hits = topDocs.scoreDocs;
+
+			// retrieve each matching document from the ScoreDoc array
+			int resultCount = 0;
+
+			String itemName;
+			String itemIDstr;
+			for(int i = 0; i < hits.length; i++) {
+				Document doc = se.getDocument(hits[i].doc);
+				itemIDstr = doc.get("itemID");
+				itemID = Integer.parseInt(itemIDstr);
+				if(spatialItemID.contains(itemID)){
+					if(numResultsToSkip > 0)
+						numResultsToSkip--;
+					else{
+						if(numResultsToReturn > 0){
+							numResultsToReturn--;
+							searchResultList.add(new SearchResult(Integer.toString(hits[i].doc), doc.get("name")));
+						}
+						else
+							break;
+					}
+				}
+			}
+
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -158,7 +191,6 @@ public class AuctionSearch implements IAuctionSearch {
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		}
-
 
 		SearchResult[] resultArray = new SearchResult[searchResultList.size()];
 		for(int i = 0; i < searchResultList.size(); i++){
