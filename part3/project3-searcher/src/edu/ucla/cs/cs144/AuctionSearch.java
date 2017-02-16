@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.sun.jmx.snmp.Timestamp;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -72,7 +73,7 @@ public class AuctionSearch implements IAuctionSearch {
 			int resultCount = 0;
 
 			SearchResult[] resultArray = new SearchResult[numResultsToReturn];	
-			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn; i++) { //TODO: potential off-by-one error?
+			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn && i < hits.length; i++) { //TODO: potential off-by-one error?
 				Document doc = se.getDocument(hits[i].doc);
 				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
 				resultCount++;
@@ -199,6 +200,10 @@ public class AuctionSearch implements IAuctionSearch {
 		return resultArray;
 	}
 
+	public boolean isNull(String str){
+		return str == "\\N";
+	}
+
 	public String getXMLDataForItemId(String itemId) {
 		// TODO: Your code here!
 
@@ -212,12 +217,52 @@ public class AuctionSearch implements IAuctionSearch {
 
 		String xmlResult = "";
 		//TODO: Do mySQL query over all tables to get all item information
-		String query = "SELECT * FROM item WHERE itemID=" + itemId;
+		String itemQuery = "SELECT * FROM item " +
+				"JOIN location ON location.locationID=item.locationID " +
+				"JOIN seller ON seller.sellerID=item.sellerID " +
+				" WHERE item.itemID=" + itemId;
+
+		String categoryQuery = "SELECT category FROM category WHERE itemID=" + itemId;
+		String bidQuery = "SELECT * FROM bid " +
+				"JOIN bidder ON bid.bidderID=bidder.bidderID " +
+				"LEFT OUTER JOIN location ON location.locationID=bidder.locationID " +
+				"WHERE bid.itemID=" + itemId;
 
 		try {
 			Statement stmt = conn.createStatement();
-			System.out.println(query);
-			ResultSet rs = stmt.executeQuery(query);
+			System.out.println(itemQuery);
+			ResultSet rs = stmt.executeQuery(itemQuery);
+
+			while (rs.next()) {
+				String itemID = Integer.toString(rs.getInt("itemID"));
+				String description = rs.getString("description");
+				String currently = Double.toString(rs.getDouble("currently"));
+				String itemLatitude = Double.toString(rs.getDouble("latitude"));
+				String itemLongitude = Double.toString(rs.getDouble("longtitude"));
+				String itemCountry = rs.getString("country");
+				String buyPrice = Double.toString(rs.getDouble("buyPrice"));
+				String firstBid = Double.toString(rs.getDouble("firstBid"));
+				String numberOfBids = Integer.toString(rs.getInt("numberOfBids"));
+				// TODO: convert sql timedate to xml timedate format
+//				String started = convertToXmlDateFormat(rs.getTimestamp("started"));
+//				String ends = convertToXmlDateFormat(rs.getDate("ends"));
+				String sellerID = Integer.toString(rs.getInt("sellerID"));
+				String Rating = Integer.toString(rs.getInt("rating"));
+
+				// TODO: tokenize category and bid
+				// format into XML
+				// check all tokens
+
+				System.out.println(itemID);
+				if(isNull(description))
+					System.out.println(description);
+				System.out.println(currently);
+				System.out.println("here");
+
+			}
+
+			rs = stmt.executeQuery(categoryQuery);
+			rs = stmt.executeQuery(bidQuery);
 
 			//TODO: Fill in xmlResult string
 			stmt.close();
@@ -239,6 +284,19 @@ public class AuctionSearch implements IAuctionSearch {
 	
 	public String echo(String message) {
 		return message;
+	}
+
+	// TODO: convert sql timedate to xml timedate format
+	public String convertToXmlDateFormat(Timestamp sqlFormattedDate){
+		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
+		SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
+		String xmlDate = "";
+		try {
+			xmlDate = xmlDateFormat.format(sqlFormattedDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return xmlDate;
 	}
 
 }

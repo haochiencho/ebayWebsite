@@ -247,7 +247,11 @@ class MyParser {
         StringBuilder str = new StringBuilder();
         int length = data.size();
         for(int i = 0; i < length; i++){
-            str.append(data.get(i));
+            String tempStr = data.get(i);
+            if(tempStr == ""){
+                tempStr = "\\N";
+            }
+            str.append(tempStr);
             if(i != length - 1){
                 str.append(columnSeparator);
             }
