@@ -62,31 +62,30 @@ public class AuctionSearch implements IAuctionSearch {
 			SearchEngine se = new SearchEngine();
 
 			// retrieve top matching document list for the query
-			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
-			TopDocs topDocs = se.performSearch(query, 2000);
+			TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
+			//TopDocs topDocs = se.performSearch(query, 2000);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 			ScoreDoc[] hits = topDocs.scoreDocs;
 
 			// retrieve each matching document from the ScoreDoc array
 			int resultCount = 0;
-			/*
+
 			SearchResult[] resultArray = new SearchResult[numResultsToReturn];	
 			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn; i++) { //TODO: potential off-by-one error?
 				Document doc = se.getDocument(hits[i].doc);
-				resultArray[resultCount] = new SearchResult(Integer.toString(hits[i].doc), doc.get("name"));
+				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
 				resultCount++;
-				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
 			}
-			*/
+
 			
-			SearchResult[] resultArray = new SearchResult[hits.length];	
-			for (int i = 0; i < hits.length; i++) { 
-				Document doc = se.getDocument(hits[i].doc);
-				resultArray[resultCount] = new SearchResult(Integer.toString(hits[i].doc), doc.get("name"));
-				resultCount++;
-				System.out.println("ResultCOunt: " + Integer.toString(resultCount));				
-			}
+//			SearchResult[] resultArray = new SearchResult[hits.length];
+//			for (int i = 0; i < hits.length; i++) {
+//				Document doc = se.getDocument(hits[i].doc);
+//				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
+//				resultCount++;
+//				System.out.println("ResultCOunt: " + Integer.toString(resultCount));
+//			}
 			
 			return resultArray;
 
@@ -151,7 +150,7 @@ public class AuctionSearch implements IAuctionSearch {
 
 			// retrieve top matching document list for the query
 			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
-			TopDocs topDocs = se.performSearch(query, 2000);
+			TopDocs topDocs = se.performSearch(query, Integer.MAX_VALUE);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 			ScoreDoc[] hits = topDocs.scoreDocs;
@@ -171,7 +170,7 @@ public class AuctionSearch implements IAuctionSearch {
 					else{
 						if(numResultsToReturn > 0){
 							numResultsToReturn--;
-							searchResultList.add(new SearchResult(Integer.toString(hits[i].doc), doc.get("name")));
+							searchResultList.add(new SearchResult(itemIDstr, doc.get("name")));
 						}
 						else
 							break;

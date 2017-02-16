@@ -6,4 +6,3 @@ CREATE TABLE category(itemID int, category VARCHAR(128), PRIMARY KEY(itemID, cat
 CREATE TABLE bid(itemID int, bidderID VARCHAR(128), bidID int PRIMARY KEY, bidTime TIMESTAMP, amount int);
 CREATE TABLE categoryList(itemID int PRIMARY KEY, categoryList VARCHAR(512));
 CREATE TABLE geoLocation(itemID int PRIMARY KEY, coords POINT NOT NULL) ENGINE=MyISAM;
-CREATE SPATIAL INDEX sp_index ON geoLocation(coords);
