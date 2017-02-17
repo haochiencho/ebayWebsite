@@ -331,9 +331,10 @@ class MyParser {
     //Our helper functions to parse bid node to form SQL Table 'bid'
     static boolean getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, int locationID){
         if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
-	        String Time = bidElement.getElementsByTagName("Time").item(0).getTextContent();
-	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
+	        String Time_xml = bidElement.getElementsByTagName("Time").item(0).getTextContent();
+            String Time = convertToSqlDateFormat(Time_xml);
 
+	        String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
 
             Element bidderElement = (Element)bidElement.getElementsByTagName("Bidder").item(0);
             String bidderUserID = bidderElement.getAttribute("UserID");

@@ -36,6 +36,7 @@ import edu.ucla.cs.cs144.SearchResult;
 
 import edu.ucla.cs.cs144.SearchEngine;
 import java.sql.Timestamp;
+//import org.apache.commons.lang.StringEscapeUtils;
 
 public class AuctionSearch implements IAuctionSearch {
 
@@ -118,7 +119,6 @@ public class AuctionSearch implements IAuctionSearch {
 
 		try {
 
-			//SearchResult[] = basicSearch(query, ) //TODO: use already defined function to do lucene keyword search?
 			String searchRectangle = "PointFromText('Polygon((" +
 										region.getLx() + " " + region.getLy() + "," +
 										region.getRx() + " " + region.getLy() + "," +
@@ -216,7 +216,6 @@ public class AuctionSearch implements IAuctionSearch {
 		}	
 
 		String xmlResult = "";
-		//TODO: Do mySQL query over all tables to get all item information
 		String itemQuery = "SELECT * FROM item " +
 				"JOIN location ON location.locationID=item.locationID " +
 				"JOIN seller ON seller.sellerID=item.sellerID " +
@@ -233,22 +232,30 @@ public class AuctionSearch implements IAuctionSearch {
 			System.out.println(itemQuery);
 			ResultSet rs = stmt.executeQuery(itemQuery);
 
+			//TODO: price variables only have 1 zero after the . if theyre an exact amount; ie. want 16.00 not 16.0
+			//TODO: lat and long variables seem to be return 0.0 values if null, want string itemLocation = "" if null
 			if ( rs.isBeforeFirst() ) { //is the result non-empty?
 				rs.first();
-				String itemID = Integer.toString(rs.getInt("itemID"));
-				String description = rs.getString("description");
-				String currently = Double.toString(rs.getDouble("currently"));
-				String itemLatitude = Double.toString(rs.getDouble("latitude"));
-				String itemLongitude = Double.toString(rs.getDouble("longtitude"));
-				String itemCountry = rs.getString("country");
-				String buyPrice = Double.toString(rs.getDouble("buyPrice"));
-				String firstBid = Double.toString(rs.getDouble("firstBid"));
-				String numberOfBids = Integer.toString(rs.getInt("numberOfBids"));
-				String sellerID = rs.getString("sellerID");
-				String rating = Integer.toString(rs.getInt("rating"));
+				String itemID = 		escapeXml( Integer.toString(rs.getInt("itemID")) );
+				String name = 			escapeXml( rs.getString("name") );
+				String description = 	escapeXml( rs.getString("description") );
+				String currently = 		"$" + escapeXml( Double.toString(rs.getDouble("currently")) );
+				String itemLocation = 	escapeXml( rs.getString("location") );
+				String itemLatitude = 	escapeXml( Double.toString(rs.getDouble("latitude")) );
+				System.out.println("itemLatitude:_" + itemLatitude + "_");
+				String itemLongitude =	escapeXml( Double.toString(rs.getDouble("longtitude")) );
+				String itemCountry = 	escapeXml( rs.getString("country") );
+				String buyPrice = 		"$" + escapeXml( Double.toString(rs.getDouble("buyPrice")) );
+				String firstBid = 		"$" + escapeXml( Double.toString(rs.getDouble("firstBid")) );
+				String numberOfBids = 	escapeXml( Integer.toString(rs.getInt("numberOfBids")) );
+				String sellerID = 		escapeXml( rs.getString("sellerID") );
+				String rating = 		escapeXml( Integer.toString(rs.getInt("rating")) );
+//				System.out.println("Item: " + itemID + ", " + name + ", "+ description + ", " + currently + ", " + buyPrice + ", " + firstBid + ", " + numberOfBids);
+//				System.out.println("Location: " + itemLocation + ", " + itemLatitude + ", " + itemLongitude + ", " + itemCountry);
+//				System.out.println("Seller: " + sellerID + ", " + rating);
 
-				String started = convertToXmlDateFormat(rs.getTimestamp("started"));
-				String ends = convertToXmlDateFormat(rs.getTimestamp("ends"));
+				String started = 	escapeXml( convertToXmlDateFormat(rs.getTimestamp("started")) );
+				String ends = 		escapeXml( convertToXmlDateFormat(rs.getTimestamp("ends")) );
 				System.out.println("Timestamps: " + started + ", " + ends);
 				
 				// TODO: tokenize category and bid
@@ -257,18 +264,19 @@ public class AuctionSearch implements IAuctionSearch {
 
 				ResultSet rsCategory = stmt.executeQuery(categoryQuery);
 				while (rsCategory.next()) {
-					String category = rsCategory.getString("category");
+					String category = escapeXml( rsCategory.getString("category") );
 					System.out.println("Category: " + category);
 				}
 
+				//TODO: fix bid table; seems like it's not collecting bidTime timestamps and amounts correctly
 				ResultSet rsBid = stmt.executeQuery(bidQuery);
 				while (rsBid.next()) {
-					String bidderRating = Integer.toString(rsBid.getInt("rating"));					
-					String bidderID = rsBid.getString("bidderID");
-					String bidderLocation = rsBid.getString("location");
-					String bidderCountry = rsBid.getString("country");
-					String bidTime = convertToXmlDateFormat(rsBid.getTimestamp("bidTime"));
-					String bidAmount = Integer.toString(rsBid.getInt("bidTime"));
+					String bidderRating = 	escapeXml( Integer.toString(rsBid.getInt("rating")) );					
+					String bidderID = 		escapeXml( rsBid.getString("bidderID") );
+					String bidderLocation = escapeXml( rsBid.getString("location") );
+					String bidderCountry = 	escapeXml( rsBid.getString("country") );
+					String bidTime = 		escapeXml( convertToXmlDateFormat(rsBid.getTimestamp("bidTime")) );
+					String bidAmount = 		"$" + escapeXml( Integer.toString(rsBid.getInt("bidTime")) );
 					System.out.println("Bid: " + bidderRating + ", " + bidderLocation + ", " + bidderCountry +
 										", " + bidTime + ", " + bidAmount);
 				}
@@ -307,11 +315,23 @@ public class AuctionSearch implements IAuctionSearch {
 		return message;
 	}
 
-	public String convertToXmlDateFormat(Timestamp javaTimeStamp) {
+	public String convertToXmlDateFormat(Timestamp javaTimeStamp) { 
 		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
 		String xmlDateString = "";
 		xmlDateString = xmlDateFormat.format(javaTimeStamp);
 		return xmlDateString;
 	}
+
+	//TODO: Maybe replace this function with 
+	//org.apache.commons.lang.StringEscapeUtils
+	//String escapedXml = StringEscapeUtils.escapeXml("the data might contain & or ! or % or ' or # etc");
+	public String escapeXml(String s) {
+		if (s == null)
+			return "";
+		if (s == "0.0")
+			return "";
+		return s.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
+	}
+
 
 }

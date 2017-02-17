@@ -54,10 +54,17 @@ public class AuctionSearchTest {
 		System.out.println("XML data for ItemId: " + itemId);
 		System.out.println(item);
 
+		//Test non-existent item 
 		String itemId1 = "-1";
 		String item1 = as.getXMLDataForItemId(itemId1);
 		System.out.println("XML data for ItemId: " + itemId1);
 		System.out.println(item1);
+
+		//Test item with bids
+		String itemId2 = "1497596470";
+		String item2 = as.getXMLDataForItemId(itemId2);
+		System.out.println("XML data for ItemId: " + itemId2);
+		System.out.println(item2);
 
 		// Add your own test here
 	}
