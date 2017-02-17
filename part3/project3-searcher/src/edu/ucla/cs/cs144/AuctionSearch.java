@@ -250,8 +250,9 @@ public class AuctionSearch implements IAuctionSearch {
 				String numberOfBids = 	escapeXml( Integer.toString(rs.getInt("numberOfBids")) );
 				String sellerID = 		escapeXml( rs.getString("sellerID") );
 				String rating = 		escapeXml( Integer.toString(rs.getInt("rating")) );
+				System.out.println("Item: " + name);
 //				System.out.println("Item: " + itemID + ", " + name + ", "+ description + ", " + currently + ", " + buyPrice + ", " + firstBid + ", " + numberOfBids);
-//				System.out.println("Location: " + itemLocation + ", " + itemLatitude + ", " + itemLongitude + ", " + itemCountry);
+				System.out.println("Location: " + itemLocation + ", " + itemLatitude + ", " + itemLongitude + ", " + itemCountry);
 //				System.out.println("Seller: " + sellerID + ", " + rating);
 
 				String started = 	escapeXml( convertToXmlDateFormat(rs.getTimestamp("started")) );
@@ -268,7 +269,6 @@ public class AuctionSearch implements IAuctionSearch {
 					System.out.println("Category: " + category);
 				}
 
-				//TODO: fix bid table; seems like it's not collecting bidTime timestamps and amounts correctly
 				ResultSet rsBid = stmt.executeQuery(bidQuery);
 				while (rsBid.next()) {
 					String bidderRating = 	escapeXml( Integer.toString(rsBid.getInt("rating")) );					
@@ -276,7 +276,7 @@ public class AuctionSearch implements IAuctionSearch {
 					String bidderLocation = escapeXml( rsBid.getString("location") );
 					String bidderCountry = 	escapeXml( rsBid.getString("country") );
 					String bidTime = 		escapeXml( convertToXmlDateFormat(rsBid.getTimestamp("bidTime")) );
-					String bidAmount = 		"$" + escapeXml( Integer.toString(rsBid.getInt("bidTime")) );
+					String bidAmount = 		"$" + escapeXml( Double.toString(rsBid.getDouble("amount")) );
 					System.out.println("Bid: " + bidderRating + ", " + bidderLocation + ", " + bidderCountry +
 										", " + bidTime + ", " + bidAmount);
 				}
