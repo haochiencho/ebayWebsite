@@ -1,6 +1,3 @@
-This example contains a simple utility class to simplify opening database
-connections in Java applications, such as the one you will write to build
-your Lucene index. 
-
-To build and run the sample code, use the "run" ant target inside
-the directory with build.xml by typing "ant run".
+We create some of the tables that we need in part two: particularly categoryList and geoLocation tables. The indicies for these tables are created
+in part 3 via drop and load index sql. Also note that the dropSQLIndex.sql assumes that the index exists, this gives an error but does not crash 
+the script.
