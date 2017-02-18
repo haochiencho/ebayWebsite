@@ -53,7 +53,14 @@ public class AuctionSearch implements IAuctionSearch {
          * placed at src/edu/ucla/cs/cs144.
          *
          */
-	
+
+	/**
+	 * @param String query
+	 * @param int numResultsToskip
+	 * @param int numResultsToReturn
+	 *
+	 * @return SearchResult[]
+	 * */
 	public SearchResult[] basicSearch(String query, int numResultsToSkip, 
 			int numResultsToReturn) {
 		
@@ -62,7 +69,7 @@ public class AuctionSearch implements IAuctionSearch {
 			SearchEngine se = new SearchEngine();
 
 			// retrieve top matching document list for the query
-			TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
+			TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 			ScoreDoc[] hits = topDocs.scoreDocs;
@@ -74,7 +81,7 @@ public class AuctionSearch implements IAuctionSearch {
 			if(size < 0)
 				size = 0;
 			SearchResult[] resultArray = new SearchResult[size];
-			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn && i < hits.length; i++) { //TODO: potential off-by-one error?
+			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn && i < hits.length; i++) {
 				Document doc = se.getDocument(hits[i].doc);
 				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
 				resultCount++;
@@ -90,6 +97,14 @@ public class AuctionSearch implements IAuctionSearch {
 		return new SearchResult[0];
 	}
 
+	/**
+	 * @param String query
+	 * @param SearchRegion region
+	 * @param int numResultsToskip
+	 * @param int numResultsToReturn
+	 *
+	 * @return SearchResult[]
+	 * */
 	public SearchResult[] spatialSearch(String query, SearchRegion region,
 			int numResultsToSkip, int numResultsToReturn) {
 
