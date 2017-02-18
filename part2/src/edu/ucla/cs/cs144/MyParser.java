@@ -378,6 +378,9 @@ class MyParser {
             getLocation(locationID, bidderElement);
 			getLocationFuncIsCalled = true;
         }
+        else{
+		    locationID = -1;
+        }
 
 		ArrayList<String> data = new ArrayList<String>();
 		data.add(bidderID);

@@ -36,7 +36,6 @@ import edu.ucla.cs.cs144.SearchResult;
 
 import edu.ucla.cs.cs144.SearchEngine;
 import java.sql.Timestamp;
-//import org.apache.commons.lang.StringEscapeUtils;
 
 public class AuctionSearch implements IAuctionSearch {
 
@@ -57,7 +56,6 @@ public class AuctionSearch implements IAuctionSearch {
 	
 	public SearchResult[] basicSearch(String query, int numResultsToSkip, 
 			int numResultsToReturn) {
-		// TODO: Your code here!
 		
 		// instantiate the search engine
 		try {
@@ -65,7 +63,6 @@ public class AuctionSearch implements IAuctionSearch {
 
 			// retrieve top matching document list for the query
 			TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
-			//TopDocs topDocs = se.performSearch(query, 2000);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
 			ScoreDoc[] hits = topDocs.scoreDocs;
@@ -73,21 +70,15 @@ public class AuctionSearch implements IAuctionSearch {
 			// retrieve each matching document from the ScoreDoc array
 			int resultCount = 0;
 
-			SearchResult[] resultArray = new SearchResult[numResultsToReturn];	
+			int size = hits.length - numResultsToSkip;
+			if(size < 0)
+				size = 0;
+			SearchResult[] resultArray = new SearchResult[size];
 			for (int i = numResultsToSkip; i < numResultsToSkip + numResultsToReturn && i < hits.length; i++) { //TODO: potential off-by-one error?
 				Document doc = se.getDocument(hits[i].doc);
 				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
 				resultCount++;
 			}
-
-			
-//			SearchResult[] resultArray = new SearchResult[hits.length];
-//			for (int i = 0; i < hits.length; i++) {
-//				Document doc = se.getDocument(hits[i].doc);
-//				resultArray[resultCount] = new SearchResult(doc.get("itemID"), doc.get("name"));
-//				resultCount++;
-//				System.out.println("ResultCOunt: " + Integer.toString(resultCount));
-//			}
 			
 			return resultArray;
 
@@ -101,7 +92,6 @@ public class AuctionSearch implements IAuctionSearch {
 
 	public SearchResult[] spatialSearch(String query, SearchRegion region,
 			int numResultsToSkip, int numResultsToReturn) {
-		// TODO: Your code here!
 
 		// Create a connection to the database to retrieve Items from Spatial Index
 		Connection conn = null;
@@ -126,11 +116,9 @@ public class AuctionSearch implements IAuctionSearch {
 										region.getLx() + " " + region.getRy() + "," +
 										region.getLx() + " " + region.getLy() + "))')";
 			String example = "PointFromText('Polygon((-200 -200,-200 200,200 200,200 -200,-200 -200))')";
-			System.out.println(searchRectangle);
 			Statement stmt = conn.createStatement();
 
 			String spatialQuery = "SELECT * FROM geoLocation WHERE MBRContains(" + searchRectangle + ",coords)";
-			System.out.println(spatialQuery);
 			ResultSet rs = stmt.executeQuery(spatialQuery);
 
 			Integer itemID; 
@@ -139,8 +127,6 @@ public class AuctionSearch implements IAuctionSearch {
 				itemID = rs.getInt("itemID");
 				coords = rs.getString("coords");
 				spatialItemID.add(itemID);
-				//System.out.println("ItemID: " + Integer.toString(itemID) + " Coords: " + coords);
-
 	   		}
 
 	   		stmt.close();
@@ -150,7 +136,6 @@ public class AuctionSearch implements IAuctionSearch {
 			SearchEngine se = new SearchEngine();
 
 			// retrieve top matching document list for the query
-			//TopDocs topDocs = se.performSearch(query, numResultsToSkip + numResultsToReturn); //TODO: more specific queries
 			TopDocs topDocs = se.performSearch(query, Integer.MAX_VALUE);
 
 			// obtain the ScoreDoc (= documentID, relevanceScore) array from topDocs
@@ -205,7 +190,6 @@ public class AuctionSearch implements IAuctionSearch {
 	}
 
 	public String getXMLDataForItemId(String itemId) {
-		// TODO: Your code here!
 
 		// Create a connection to the database to retrieve Items from Spatial Index
 		Connection conn = null;	
@@ -215,7 +199,6 @@ public class AuctionSearch implements IAuctionSearch {
 			System.out.println(ex);
 		}	
 
-		String xmlResult = "";
 		String itemQuery = "SELECT * FROM item " +
 				"JOIN location ON location.locationID=item.locationID " +
 				"JOIN seller ON seller.sellerID=item.sellerID " +
@@ -226,73 +209,106 @@ public class AuctionSearch implements IAuctionSearch {
 				"JOIN bidder ON bid.bidderID=bidder.bidderID " +
 				"LEFT OUTER JOIN location ON location.locationID=bidder.locationID " +
 				"WHERE bid.itemID=" + itemId;
+		String xmlResult = "";
 
 		try {
 			Statement stmt = conn.createStatement();
-			System.out.println(itemQuery);
 			ResultSet rs = stmt.executeQuery(itemQuery);
 
-			//TODO: price variables only have 1 zero after the . if theyre an exact amount; ie. want 16.00 not 16.0
-			//TODO: lat and long variables seem to be return 0.0 values if null, want string itemLocation = "" if null
 			if ( rs.isBeforeFirst() ) { //is the result non-empty?
 				rs.first();
-				String itemID = 		escapeXml( rs.getString("itemID") );
-				String name = 			escapeXml( rs.getString("name") );
-				String description = 	escapeXml( rs.getString("description") );
-				String currently = 		"$" + escapeXml( rs.getString("currently") );
-				String itemLocation = 	escapeXml( rs.getString("location") );
-				String itemLatitude = 	escapeXml( rs.getString("latitude") );
-				String itemLongitude =	escapeXml( rs.getString("longtitude") );
-				String itemCountry = 	escapeXml( rs.getString("country") );
-				String buyPrice = 		"$" + escapeXml( rs.getString("buyPrice") );
-				String firstBid = 		"$" + escapeXml( rs.getString("firstBid") );
-				String numberOfBids = 	escapeXml( rs.getString("numberOfBids") );
-				String sellerID = 		escapeXml( rs.getString("sellerID") );
-				String rating = 		escapeXml( rs.getString("rating") );
-				System.out.println("Item: " + name);
-//				System.out.println("Item: " + itemID + ", " + name + ", "+ description + ", " + currently + ", " + buyPrice + ", " + firstBid + ", " + numberOfBids);
-				System.out.println("Location: " + itemLocation + ", " + itemLatitude + ", " + itemLongitude + ", " + itemCountry);
-//				System.out.println("Seller: " + sellerID + ", " + rating);
+				String itemID = 		escapeXml( rs.getString("itemID"), true );
+				String name = 			escapeXml( rs.getString("name"), false );
+				String description = 	escapeXml( rs.getString("description"), false );
+				String currently = 		"$" + escapeXml( rs.getString("currently"), false );
+				String itemLocation = 	escapeXml( rs.getString("location"), false );
+				String itemLatitude = 	escapeXml( rs.getString("latitude"), true );
+				String itemLongitude =	escapeXml( rs.getString("longtitude"), true );
+				String itemCountry = 	escapeXml( rs.getString("country"), false );
+				String buyPrice = 		escapeXml( rs.getString("buyPrice"), false );
+				String firstBid = 		"$" + escapeXml( rs.getString("firstBid"), false );
+				String numberOfBids = 	escapeXml( rs.getString("numberOfBids"), false );
+				String sellerID = 		escapeXml( rs.getString("sellerID"), true );
+				String rating = 		escapeXml( rs.getString("rating"), true );
 
-				String started = 	escapeXml( convertToXmlDateFormat(rs.getTimestamp("started")) );
-				String ends = 		escapeXml( convertToXmlDateFormat(rs.getTimestamp("ends")) );
-				System.out.println("Timestamps: " + started + ", " + ends);
-				
-				// TODO: tokenize category and bid
-				// format into XML
-				// check all tokens
+				String started = 	escapeXml( convertToXmlDateFormat(rs.getTimestamp("started")), false );
+				String ends = 		escapeXml( convertToXmlDateFormat(rs.getTimestamp("ends")), false );
+
+				xmlResult += "<Item ItemID=\"" + itemID + "\">\n";
+				xmlResult += "<Name>" + name + "</Name>\n";
+
 
 				ResultSet rsCategory = stmt.executeQuery(categoryQuery);
 				while (rsCategory.next()) {
-					String category = escapeXml( rsCategory.getString("category") );
-					System.out.println("Category: " + category);
+					String category = escapeXml( rsCategory.getString("category"), false );
+					xmlResult += "<Category>" + category + "</Category>\n";
 				}
+
+				xmlResult += "<Currently>" + currently + "</Currently>\n";
+				if(buyPrice != ""){
+					xmlResult += "<Buy_Price>$" + buyPrice + "</Buy_Price>\n";
+				}
+				xmlResult += "<First_Bid>" + firstBid + "</First_Bid>\n";
+				xmlResult += "<Number_of_Bids>" + numberOfBids + "</Number_of_Bids>\n";
+				boolean hasBid = false;
+
 
 				ResultSet rsBid = stmt.executeQuery(bidQuery);
 				while (rsBid.next()) {
-					String bidderRating = 	escapeXml( rsBid.getString("rating") );
-					String bidderID = 		escapeXml( rsBid.getString("bidderID") );
-					String bidderLocation = escapeXml( rsBid.getString("location") );
-					String bidderCountry = 	escapeXml( rsBid.getString("country") );
-					String bidTime = 		escapeXml( convertToXmlDateFormat(rsBid.getTimestamp("bidTime")) );
-					String bidAmount = 		"$" + escapeXml( rsBid.getString("amount") );
-					System.out.println("Bid: " + bidderRating + ", " + bidderLocation + ", " + bidderCountry +
-										", " + bidTime + ", " + bidAmount);
+					if(!hasBid){
+						xmlResult += "<Bids>\n";
+					}
+					hasBid = true;
+					String bidderRating = 	escapeXml( rsBid.getString("rating"), true );
+					String bidderID = 		escapeXml( rsBid.getString("bidderID"), true );
+					String bidderLocation = escapeXml( rsBid.getString("location"), false );
+					String bidderCountry = 	escapeXml( rsBid.getString("country"), false );
+					String bidTime = 		escapeXml( convertToXmlDateFormat(rsBid.getTimestamp("bidTime")), false );
+					String bidAmount = 		"$" + escapeXml( rsBid.getString("amount"), false );
+
+					xmlResult += "<Bid>\n" + "<Bidder Rating=\"" + bidderRating + "\" UserID=\"" + bidderID + "\">\n";
+					if(bidderLocation != ""){
+						xmlResult += "<Location>" + bidderLocation + "</Location>\n";
+					}
+					if(bidderCountry != ""){
+						xmlResult += "<Country>" + bidderCountry + "</Country>\n";
+					}
+					xmlResult += "</Bidder>\n";
+					xmlResult += "<Time>" + bidTime + "</Time>\n";
+					xmlResult += "<Amount>" + bidAmount + "</Amount>\n";
+					xmlResult += "</Bid>\n";
 				}
 
-				System.out.println(itemID);
-				if(isNull(description))
-					System.out.println(description);
-				System.out.println(currently);
-				System.out.println("here");
+				if(!hasBid){
+					xmlResult += "<Bids />\n";
+				}
+				else{
+					xmlResult += "</Bids>\n";
+				}
+
+				xmlResult += "<Location";
+				if(itemLatitude != ""){
+					xmlResult += " Latitude=\"" + itemLatitude + "\"";
+				}
+				if(itemLongitude != ""){
+					xmlResult += " Longitude=\"" + itemLongitude + "\"";
+				}
+				xmlResult += ">" + itemLocation + "</Location>\n";
+
+				xmlResult += "<Country>" + itemCountry + "</Country>\n";
+				xmlResult += "<Started>" + started + "</Started>\n";
+				xmlResult += "<Ends>" + ends + "</Ends>\n";
+				xmlResult += "<Seller Rating=\"" + rating + "\" UserID=\"" + sellerID + "\" />\n";
+				if(description == ""){
+					xmlResult += "<Description />\n";
+				}
+				else{
+					xmlResult += "<Description>" + description + "</Description>\n";
+				}
+				xmlResult += "</Item>";
 			}
 
-			//rs = stmt.executeQuery(categoryQuery);
-			//rs = stmt.executeQuery(bidQuery);
-			xmlResult += 
-
-			//TODO: Fill in xmlResult string
-			rs.close();			
+			rs.close();
 			stmt.close();
 
 
@@ -315,6 +331,7 @@ public class AuctionSearch implements IAuctionSearch {
 		return message;
 	}
 
+
 	public String convertToXmlDateFormat(Timestamp javaTimeStamp) { 
 		SimpleDateFormat xmlDateFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
 		String xmlDateString = "";
@@ -322,15 +339,16 @@ public class AuctionSearch implements IAuctionSearch {
 		return xmlDateString;
 	}
 
-	//TODO: Maybe replace this function with 
 	//org.apache.commons.lang.StringEscapeUtils
 	//String escapedXml = StringEscapeUtils.escapeXml("the data might contain & or ! or % or ' or # etc");
-	public String escapeXml(String s) {
+	public String escapeXml(String s, boolean isAttribute) {
 		if (s == null)
 			return "";
-		if (s == "0.0")
-			return "";
-		return s.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
+		// escape character inspired by: http://stackoverflow.com/questions/1091945/what-characters-do-i-need-to-escape-in-xml-documents
+		if(isAttribute)
+			return s.replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
+		else
+			return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;");
 	}
 
 

@@ -26,7 +26,7 @@ public class SearchEngine {
 
     /** Creates a new instance of SearchEngine */
     public SearchEngine() throws IOException {
-        searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/var/lib/lucene/")))); //TODO: Check this file path
+        searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File("/var/lib/lucene/"))));
         parser = new QueryParser("content", new StandardAnalyzer());
     }
 

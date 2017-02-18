@@ -33,7 +33,7 @@ public class Indexer {
 
     public IndexWriter getIndexWriter(boolean create) throws IOException {
         if (indexWriter == null) {
-            Directory indexDir = FSDirectory.open(new File("/var/lib/lucene/")); //TODO: Check that this path is correct
+            Directory indexDir = FSDirectory.open(new File("/var/lib/lucene/"));
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             indexWriter = new IndexWriter(indexDir, config);
             if(create){
@@ -50,7 +50,7 @@ public class Indexer {
         }
     }
 
-    public void indexItem(Item item) throws IOException { //TODO: Choose what fields Item will be indexed on
+    public void indexItem(Item item) throws IOException {
         IndexWriter writer = getIndexWriter(false);
         Document doc = new Document();
         doc.add(new StringField("itemID", item.getItemID(), Field.Store.YES));
@@ -100,11 +100,6 @@ public class Indexer {
         System.exit(-1);
     }
 
-    /*	try {
-	    conn = DbManager.getConnection(true);
-	} catch (SQLException ex) {
-	    System.out.println(ex);
-	}*/
 	// Item[] items =
 	Integer itemID; 
 	String name, category, description;
@@ -114,12 +109,13 @@ public class Indexer {
 	    
 	    while (rs.next()) {
             itemID = rs.getInt("itemID"); //TODO: Maybe have a handler if for some bizarre reason itemID is null
-            
+
+
             name = rs.getString("name");
             if (name == null)
                 name = "";
 
-            category = rs.getString("categoryList"); //TODO: Get categoryList from new categoryList table
+            category = rs.getString("categoryList");
             if (category == null)
                 category = "";
 
@@ -129,7 +125,6 @@ public class Indexer {
 
             Item item = new Item(Integer.toString(itemID), name, category, description);
             indexItem(item);
-            //System.out.println("ItemID: " + Integer.toString(itemID));
 	    }
 
         stmt.close();
