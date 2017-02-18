@@ -236,20 +236,19 @@ public class AuctionSearch implements IAuctionSearch {
 			//TODO: lat and long variables seem to be return 0.0 values if null, want string itemLocation = "" if null
 			if ( rs.isBeforeFirst() ) { //is the result non-empty?
 				rs.first();
-				String itemID = 		escapeXml( Integer.toString(rs.getInt("itemID")) );
+				String itemID = 		escapeXml( rs.getString("itemID") );
 				String name = 			escapeXml( rs.getString("name") );
 				String description = 	escapeXml( rs.getString("description") );
-				String currently = 		"$" + escapeXml( Double.toString(rs.getDouble("currently")) );
+				String currently = 		"$" + escapeXml( rs.getString("currently") );
 				String itemLocation = 	escapeXml( rs.getString("location") );
-				String itemLatitude = 	escapeXml( Double.toString(rs.getDouble("latitude")) );
-				System.out.println("itemLatitude:_" + itemLatitude + "_");
-				String itemLongitude =	escapeXml( Double.toString(rs.getDouble("longtitude")) );
+				String itemLatitude = 	escapeXml( rs.getString("latitude") );
+				String itemLongitude =	escapeXml( rs.getString("longtitude") );
 				String itemCountry = 	escapeXml( rs.getString("country") );
-				String buyPrice = 		"$" + escapeXml( Double.toString(rs.getDouble("buyPrice")) );
-				String firstBid = 		"$" + escapeXml( Double.toString(rs.getDouble("firstBid")) );
-				String numberOfBids = 	escapeXml( Integer.toString(rs.getInt("numberOfBids")) );
+				String buyPrice = 		"$" + escapeXml( rs.getString("buyPrice") );
+				String firstBid = 		"$" + escapeXml( rs.getString("firstBid") );
+				String numberOfBids = 	escapeXml( rs.getString("numberOfBids") );
 				String sellerID = 		escapeXml( rs.getString("sellerID") );
-				String rating = 		escapeXml( Integer.toString(rs.getInt("rating")) );
+				String rating = 		escapeXml( rs.getString("rating") );
 				System.out.println("Item: " + name);
 //				System.out.println("Item: " + itemID + ", " + name + ", "+ description + ", " + currently + ", " + buyPrice + ", " + firstBid + ", " + numberOfBids);
 				System.out.println("Location: " + itemLocation + ", " + itemLatitude + ", " + itemLongitude + ", " + itemCountry);
@@ -271,12 +270,12 @@ public class AuctionSearch implements IAuctionSearch {
 
 				ResultSet rsBid = stmt.executeQuery(bidQuery);
 				while (rsBid.next()) {
-					String bidderRating = 	escapeXml( Integer.toString(rsBid.getInt("rating")) );					
+					String bidderRating = 	escapeXml( rsBid.getString("rating") );
 					String bidderID = 		escapeXml( rsBid.getString("bidderID") );
 					String bidderLocation = escapeXml( rsBid.getString("location") );
 					String bidderCountry = 	escapeXml( rsBid.getString("country") );
 					String bidTime = 		escapeXml( convertToXmlDateFormat(rsBid.getTimestamp("bidTime")) );
-					String bidAmount = 		"$" + escapeXml( Double.toString(rsBid.getDouble("amount")) );
+					String bidAmount = 		"$" + escapeXml( rsBid.getString("amount") );
 					System.out.println("Bid: " + bidderRating + ", " + bidderLocation + ", " + bidderCountry +
 										", " + bidTime + ", " + bidAmount);
 				}
@@ -290,6 +289,7 @@ public class AuctionSearch implements IAuctionSearch {
 
 			//rs = stmt.executeQuery(categoryQuery);
 			//rs = stmt.executeQuery(bidQuery);
+			xmlResult += 
 
 			//TODO: Fill in xmlResult string
 			rs.close();			

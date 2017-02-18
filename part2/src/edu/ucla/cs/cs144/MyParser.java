@@ -284,7 +284,6 @@ class MyParser {
 
                     // populates the location table
                     getLocation(locationCount, eElement);
-					locationCount++; //locationCount will act as our locationID ie. primary key
 					
 					
 					//populates the seller table
@@ -300,6 +299,7 @@ class MyParser {
 
 					//populates the item table
                     getItem(eElement, locationCount, sellerIdStr); // gets a row/tuple of data for Item table
+                    locationCount++; //locationCount will act as our locationID ie. primary key
 					
                     //populates the category table
                     String ItemID = eElement.getAttribute("ItemID");
@@ -400,7 +400,7 @@ class MyParser {
 				String longitude = locationElement.getAttribute("Longitude");
                 String country = "";
                 if(getElementsByTagNameNR( item,"Country").length > 0) {
-                    country = item.getElementsByTagName("Country").item(0).getTextContent();
+                    country = getElementByTagNameNR(item, "Country").getTextContent();
                 }
 
                 ArrayList<String> geoLocation = new ArrayList();
