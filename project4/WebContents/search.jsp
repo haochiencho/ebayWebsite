@@ -7,12 +7,14 @@
 </head>
 
 <body>
-<<<<<<< HEAD
+
     <div class="container title_box">
         <div class="title">
             Ebay Website
         </div>
         <form action="search" method="GET">
+            <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
+            <input type=="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %>;
             <input type="text" name="q" class="col-md-8 col-md-offset-2" placeholder=<%= request.getAttribute("placeholder") %>>
             <input type="submit" value="Submit"> <br>
         </form>
@@ -31,15 +33,7 @@
             <button type="button" class="next-btn btn-primary col-md-1 col-md-offset-9">Next</button>
         </div>
     </div>
-=======
-    This is the search page. Display search bar and search results here. <br>
 
-    <form action="search" method="GET">
-        <input type="hidden" name="page" value=0>
-        <input type="text" name="q" placeholder=<%= request.getAttribute("placeholder") %>> <br>
-        <input type="submit" value="Submit"> <br>
-    </form>
->>>>>>> 8b6011b7e624892688234ddd3cd2053d1cc50d77
 
     <h1>Result: <%= request.getAttribute("result") %></h1>
 </body>
