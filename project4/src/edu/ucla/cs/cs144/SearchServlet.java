@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.Enumeration;
 
+import edu.ucla.cs.cs144.AuctionSearch;
+import edu.ucla.cs.cs144.SearchResult;
+
 public class SearchServlet extends HttpServlet implements Servlet {
        
     public SearchServlet() {}
@@ -27,14 +30,21 @@ public class SearchServlet extends HttpServlet implements Servlet {
   //      out.println("Parameters:");
         Enumeration paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
-                String name = (String) paramNames.nextElement();
-                String[] values = request.getParameterValues(name);
-                System.out.println("    " + name + ":");
-                queryResults += name + ": ";
-                for (int i = 0; i < values.length; i++) {
-                    System.out.println("      " + values[i]);
-                    queryResults += values[i];
+            String name = (String) paramNames.nextElement();
+            String[] values = request.getParameterValues(name);
+            System.out.println("    " + name + ":");
+            queryResults += name + ": ";
+            for (int i = 0; i < values.length; i++) {
+                System.out.println("      " + values[i]);
+                /**@var String searchQuery user search string */
+                String searchQuery = values[i];
+
+                SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, 0, 20);
+                queryResults += Integer.toString(sq.length);
+                for(int j = 0; j < sq.length; j++){
+                    queryResults += sq[j].getName() + "</br>";
                 }
+            }
         }        
 
         request.setAttribute("result", queryResults);
