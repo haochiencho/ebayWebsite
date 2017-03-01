@@ -12,11 +12,13 @@
             Ebay Website
         </div>
         <form action="search" method="GET">
-            <input type="hidden" name="page" value=0>
-            <input type="text" name="q" class="col-md-8 col-md-offset-2" placeholder=<%= request.getAttribute("placeholder") %>>
+            <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
+            <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
+            <input type="text" name="q" class="col-md-8 col-md-offset-2" placeholder=<%= request.getAttribute("placeholder") %> >
             <input type="submit" value="Submit"> <br>
         </form>
     </div>
+
     <div class="result_box">
         <div class="result well col-md-8 col-md-offset-2">
             One punch man

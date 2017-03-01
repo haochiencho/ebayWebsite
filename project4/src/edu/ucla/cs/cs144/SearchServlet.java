@@ -25,7 +25,9 @@ public class SearchServlet extends HttpServlet implements Servlet {
 
         String queryResults = "";        
         int numResultsToSkip = 0;
-        int numResultsToReturn = 0;
+        request.setAttribute("numResultsToSkip", 0);
+        int numResultsToReturn = 20;
+        request.setAttribute("numResultsToReturn", 20);
 
   //      PrintWriter out = response.getWriter();
   //      out.println();
