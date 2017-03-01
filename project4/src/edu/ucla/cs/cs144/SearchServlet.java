@@ -23,11 +23,16 @@ public class SearchServlet extends HttpServlet implements Servlet {
         request.setAttribute("title", pageTitle);
         request.setAttribute("placeholder", "Search...");
 
-        String queryResults = "";        
-        int numResultsToSkip = 0;
-        request.setAttribute("numResultsToSkip", 0);
-        int numResultsToReturn = 20;
-        request.setAttribute("numResultsToReturn", 20);
+        String queryResults = "";
+        int numResultsToSkip, numResultsToReturn;
+        numResultsToSkip = 0;
+        numResultsToReturn = 20;
+        if(request.getParameter("numResultsToSkip") == null) {
+            request.setAttribute("numResultsToSkip", 0);
+        }
+        if(request.getParameter("numResultsToReturn") == null){
+            request.setAttribute("numResultsToReturn", 20);
+        }
 
   //      PrintWriter out = response.getWriter();
   //      out.println();
@@ -40,7 +45,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
             System.out.println(name);
 
             if (name.equals("numResultsToSkip")) {
-                request.setAttribute("numResultsToSkip", values[0]);
+                request.setAttribute("numResultsToSkip", Integer.toString(Integer.parseInt(values[0]) + 20));
                 numResultsToSkip = Integer.parseInt(values[0]);
                 queryResults += values[0];
             }
@@ -53,6 +58,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
 
             if (name.equals("q")) {
                 for (int i = 0; i < values.length; i++) {
+                    request.setAttribute("q", values[i]);
                     /**@var String searchQuery user search string */
                     String searchQuery = values[i];
 

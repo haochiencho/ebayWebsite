@@ -17,6 +17,12 @@
             <input type="text" name="q" class="col-md-8 col-md-offset-2" placeholder=<%= request.getAttribute("placeholder") %> >
             <input type="submit" value="Submit"> <br>
         </form>
+            <%
+               String x = request.getParameter("submit");
+               if(x != null && x.equals("confirm")){
+
+               }
+            %>
     </div>
 
     <div class="result_box">
@@ -30,7 +36,12 @@
             Yuri On Ice
         </div>
         <div class="next_row">
-            <button type="button" class="next-btn btn-primary col-md-1 col-md-offset-9">Next</button>
+            <form action="search" method="GET">
+                <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
+                <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
+                <input type="hidden" name="q" value=<%= request.getAttribute("q") %> >
+                <input type="submit" class="next-btn btn-primary col-md-1 col-md-offset-9" value="Next"> <br>
+            </form>
         </div>
     </div>
 
