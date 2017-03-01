@@ -25,10 +25,15 @@ public class SearchServlet extends HttpServlet implements Servlet {
 
         String debug = "";
         ArrayList<String> queryResults = new ArrayList<String>();
-        int numResultsToSkip = 0;
-        request.setAttribute("numResultsToSkip", numResultsToSkip);
-        int numResultsToReturn = 20;
-        request.setAttribute("numResultsToReturn", numResultsToReturn);
+        int numResultsToSkip, numResultsToReturn;
+        numResultsToSkip = 0;
+        numResultsToReturn = 20;
+        if(request.getParameter("numResultsToSkip") == null) {
+            request.setAttribute("numResultsToSkip", numResultsToSkip);
+        }
+        if(request.getParameter("numResultsToReturn") == null){
+            request.setAttribute("numResultsToReturn", numResultsToReturn);
+        }
 
         Enumeration paramNames = request.getParameterNames();
         while (paramNames.hasMoreElements()) {
@@ -38,7 +43,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
             System.out.println(name);
 
             if (name.equals("numResultsToSkip")) {
-                request.setAttribute("numResultsToSkip", values[0]);
+                request.setAttribute("numResultsToSkip", Integer.toString(Integer.parseInt(values[0]) + 20));
                 numResultsToSkip = Integer.parseInt(values[0]);
                 debug += values[0];
             }
@@ -52,6 +57,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
             //TODO: check if query is empty
             if (name.equals("q")) {
                 for (int i = 0; i < values.length; i++) {
+                    request.setAttribute("q", values[i]);
                     /**@var String searchQuery user search string */
                     String searchQuery = values[i];
 
