@@ -30,9 +30,11 @@ public class SearchServlet extends HttpServlet implements Servlet {
                 String name = (String) paramNames.nextElement();
                 String[] values = request.getParameterValues(name);
                 System.out.println("    " + name + ":");
+                queryResults += name + ": ";
                 for (int i = 0; i < values.length; i++) {
-                System.out.println("      " + values[i]);
-            }
+                    System.out.println("      " + values[i]);
+                    queryResults += values[i];
+                }
         }        
 
         request.setAttribute("result", queryResults);

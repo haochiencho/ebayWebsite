@@ -12,8 +12,11 @@ import edu.ucla.cs.cs144.SearchResult;
 
 public class AuctionSearch {
 	
-	private static final String ENDPOINT_URL =
-		"http://oak.cs.ucla.edu/axis2/services/AuctionSearchService";
+	//TODO: Change back to cho's server
+	//private static final String ENDPOINT_URL =
+	//	"http://oak.cs.ucla.edu/axis2/services/AuctionSearchService";
+	private static final String ENDPOINT_URL = "localhost";
+
 	private static final String TARGET_NAMESPACE =
 		"http://cs144.cs.ucla.edu";
 	
