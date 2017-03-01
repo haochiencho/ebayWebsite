@@ -24,7 +24,8 @@ public class SearchServlet extends HttpServlet implements Servlet {
         request.setAttribute("placeholder", "Search...");
 
         String queryResults = "";        
-        int page = 0;
+        int numResultsToSkip = 0;
+        int numResultsToReturn = 0;
 
   //      PrintWriter out = response.getWriter();
   //      out.println();
@@ -36,18 +37,24 @@ public class SearchServlet extends HttpServlet implements Servlet {
             queryResults += name + ": ";
             System.out.println(name);
 
-            if (name == "page") {
-                request.setAttribute("page", values[0]);
-                page = Integer.parseInt(values[0]);
+            if (name.equals("numResultsToSkip")) {
+                request.setAttribute("numResultsToSkip", values[0]);
+                numResultsToSkip = Integer.parseInt(values[0]);
                 queryResults += values[0];
             }
 
-            if (name == "q") {
+            if(name.equals("numResultsToReturn")){
+                request.setAttribute("numResultsToReturn", values[0]);
+                numResultsToReturn = Integer.parseInt(values[0]);
+                queryResults += values[0];
+            }
+
+            if (name.equals("q")) {
                 for (int i = 0; i < values.length; i++) {
                     /**@var String searchQuery user search string */
                     String searchQuery = values[i];
 
-                    SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, page*20, (page+1)*20);
+                    SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, numResultsToSkip, numResultsToReturn);
                     queryResults += Integer.toString(sq.length);
                     for(int j = 0; j < sq.length; j++){
                         queryResults += sq[j].getName() + "</br>";
