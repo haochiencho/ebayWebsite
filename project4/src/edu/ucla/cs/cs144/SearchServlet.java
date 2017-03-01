@@ -24,7 +24,8 @@ public class SearchServlet extends HttpServlet implements Servlet {
         request.setAttribute("placeholder", "Search...");
 
         String queryResults = "";        
-  
+        int page = 0;
+
   //      PrintWriter out = response.getWriter();
   //      out.println();
   //      out.println("Parameters:");
@@ -32,19 +33,28 @@ public class SearchServlet extends HttpServlet implements Servlet {
         while (paramNames.hasMoreElements()) {
             String name = (String) paramNames.nextElement();
             String[] values = request.getParameterValues(name);
-            System.out.println("    " + name + ":");
             queryResults += name + ": ";
-            for (int i = 0; i < values.length; i++) {
-                System.out.println("      " + values[i]);
-                /**@var String searchQuery user search string */
-                String searchQuery = values[i];
+            System.out.println(name);
 
-                SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, 0, 20);
-                queryResults += Integer.toString(sq.length);
-                for(int j = 0; j < sq.length; j++){
-                    queryResults += sq[j].getName() + "</br>";
-                }
+            if (name == "page") {
+                request.setAttribute("page", values[0]);
+                page = Integer.parseInt(values[0]);
+                queryResults += values[0];
             }
+
+            if (name == "q") {
+                for (int i = 0; i < values.length; i++) {
+                    /**@var String searchQuery user search string */
+                    String searchQuery = values[i];
+
+                    SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, page*20, (page+1)*20);
+                    queryResults += Integer.toString(sq.length);
+                    for(int j = 0; j < sq.length; j++){
+                        queryResults += sq[j].getName() + "</br>";
+                    }
+                }                
+            }
+
         }        
 
         request.setAttribute("result", queryResults);
