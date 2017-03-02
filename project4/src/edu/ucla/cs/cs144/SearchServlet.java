@@ -76,7 +76,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
                     SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, numResultsToSkip, numResultsToReturn);
                     debug += Integer.toString(sq.length);
                     for(int j = 0; j < sq.length; j++){
-                        queryResults.add(sq[j].getName() + "</br>");
+                        queryResults.add("<a href=\"/item?id=" + sq[j].getItemId() + "\">" + sq[j].getName() + "</a><br>");
                     }
                 }                
             }
