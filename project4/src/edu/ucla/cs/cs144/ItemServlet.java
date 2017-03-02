@@ -15,7 +15,18 @@ public class ItemServlet extends HttpServlet implements Servlet {
     {
         // your codes here
         String pageTitle = "Item page";
-        request.setAttribute("title", pageTitle);        
+        request.setAttribute("title", pageTitle);
+
+        int itemID = -1;
+        if(request.getParameter("itemID") == null){
+            request.setAttribute("itemID", itemID);
+        }
+        else {
+            //TODO:
+        }
+
+
+
         request.getRequestDispatcher("/item.jsp").forward(request, response);
 
     }
