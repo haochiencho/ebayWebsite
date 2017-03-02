@@ -56,7 +56,19 @@ public class SearchServlet extends HttpServlet implements Servlet {
 
             //TODO: check if query is empty
             if (name.equals("q")) {
+                if(values.length == 0){
+                    request.setAttribute("numResultsToSkip", 0);
+                    request.setAttribute("numResultsToReturn", 20);
+                }
                 for (int i = 0; i < values.length; i++) {
+                    if(values[i].equals(null)){
+                        request.setAttribute("numResultsToSkip", 0);
+                        request.setAttribute("numResultsToReturn", 20);
+                    }
+                    if(values[i].equals("")){
+                        request.setAttribute("numResultsToSkip", 0);
+                        request.setAttribute("numResultsToReturn", 20);
+                    }
                     request.setAttribute("q", values[i]);
                     /**@var String searchQuery user search string */
                     String searchQuery = values[i];

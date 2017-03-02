@@ -21,15 +21,16 @@
     </div>
 
     <div class="result_box">
+    <%@ page import="java.util.ArrayList" %>
+    <% ArrayList<String> list = (ArrayList<String>) request.getAttribute("result"); %>
+    <% for (int i = 0; i < list.size(); i++) { %>
         <div class="result well col-md-8 col-md-offset-2">
-            One punch man
+        <%= list.get(i) %>
         </div>
-        <div class="result well col-md-8 col-md-offset-2">
-            Sword Art Online
-        </div>
-        <div class="result well col-md-8 col-md-offset-2">
-            Yuri On Ice
-        </div>
+    <% } %>
+    </div>
+
+    <div class="result_box">
         <div class="next_row">
             <form action="search" method="GET">
                 <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
@@ -38,16 +39,6 @@
                 <input type="submit" class="next-btn btn-primary col-md-1 col-md-offset-9" value="Next"> <br>
             </form>
         </div>
-    </div>
-
-    <div class="result_box">
-    <%@ page import="java.util.ArrayList" %>
-    <% ArrayList<String> list = (ArrayList<String>) request.getAttribute("result"); %>
-    <% for (int i = 0; i < list.size(); i++) { %>
-        <div class="result well col-md-8 col-md-offset-2">
-        <%=i %> : <%= list.get(i) %>
-        </div>
-    <% } %>
     </div>
 
     <div>Debug: <%= request.getAttribute("debug") %></div>
