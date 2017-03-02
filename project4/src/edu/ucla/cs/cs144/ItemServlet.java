@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucla.cs.cs144.AuctionSearch;
+
 public class ItemServlet extends HttpServlet implements Servlet {
        
     public ItemServlet() {}
@@ -17,16 +19,20 @@ public class ItemServlet extends HttpServlet implements Servlet {
         String pageTitle = "Item page";
         request.setAttribute("title", pageTitle);
 
-        int itemID = -1;
-        if(request.getParameter("itemID") == null){
-            request.setAttribute("itemID", itemID);
+        String debug = "This is a debug message";
+        String itemID = "-1";
+        if(request.getParameter("id") == null){
+            request.setAttribute("id", itemID);
         }
-        else {
-            //TODO:
+        else if (request.getParameter("id") != "-1") {
+            itemID = request.getParameter("id");
+
+            String xmlItemData = AuctionSearch.getXMLDataForItemId(itemID);
+            request.setAttribute("result", xmlItemData);
+
         }
 
-
-
+        request.setAttribute("debug", debug);
         request.getRequestDispatcher("/item.jsp").forward(request, response);
 
     }
