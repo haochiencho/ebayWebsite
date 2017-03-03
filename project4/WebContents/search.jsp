@@ -1,5 +1,6 @@
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><%= request.getAttribute("title") %></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -14,7 +15,7 @@
         <form action="search" method="GET">
             <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
             <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
-            <input type="text" name="q" class="col-md-8 col-md-offset-2" placeholder=<%= request.getAttribute("placeholder") %> >
+            <input type="text" name="q" class="col-md-8 col-md-offset-2" id="search_box" placeholder=<%= request.getAttribute("placeholder") %> >
             <input type="submit" value="Submit"> <br>
         </form>
 
@@ -31,7 +32,7 @@
     </div>
 
     <div class="result_box">
-        <div class="next_row">
+        <div class="next_row input_box">
             <form action="search" method="GET">
                 <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
                 <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
@@ -40,10 +41,51 @@
             </form>
         </div>
     </div>
+    <pre id="suggestion"></pre>
 
     <div>Debug: <%= request.getAttribute("debug") %></div>
     <script>
+        var UIcontroller = function(){
+            var initEventListeners = function(){
+                document.addEventListener('keyup', function(event) {
+                    // TODO: make request to proxy server
+                    sendAjaxRequest();
+                });
+            };
 
+            var sendAjaxRequest = function(){
+                var query = document.getElementById('search_box').value;
+                var ajax_request = "/eBay/suggest?output=toolbar&q=" + encodeURI(query);
+
+                var xmlHttp = new XMLHttpRequest();
+
+                var showSuggestion = function(){
+                    if(xmlHttp.readyState == 4) {
+                        var response = xmlHttp.responseText;
+                        response = response.replace(/</g, "&lt");
+                        response = response.replace(/>/g, "&gt");
+                        document.getElementById("suggestion").interHTML = response;
+                        console.log(response);
+                    }
+                };
+
+                xmlHttp.open("GET", ajax_request);
+                xmlHttp.onreadystatechange = showSuggestion;
+                xmlHttp.send();
+
+//                console.log(ajax_request);
+            };
+
+
+
+            return {
+                init: function(){
+                    initEventListeners();
+                }
+            };
+        }();
+
+        UIcontroller.init();
     </script>
 </body>
 </html>
