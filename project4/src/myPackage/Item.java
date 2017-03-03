@@ -1,19 +1,21 @@
 package myPackage;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class Item {
     public Item() {} 
     //TODO: handle nested items like category, bid, location, seller 
     public String itemID;
     public String name;
-    //public ArrayList<String> category;
+    public List<String> category;
     public String currently;
     public String buy_price;
     public String first_bid;
     public String number_of_bids;
     //public String Bids
-    //public String Location
+    public String location;
+	public String latitude;
+	public String longitude;
     public String country;
     public String started;
     public String ends;

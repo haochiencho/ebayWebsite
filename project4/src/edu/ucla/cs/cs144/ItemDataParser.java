@@ -163,37 +163,27 @@ class ItemDataParser {
             return nf.format(am).substring(1);
         }
     }
-    /*
+    
     //Our helper functions to parse item nodes for their catgories to form SQL Table 'category'
     // Uses the item id from getItem to create multiple categories with the same itemID.
     // Also adds an item to categoryList
     static void getCategory(Element item, Item parsedItem){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             NodeList nodeList = item.getElementsByTagName("Category");
-            ArrayList<String> categoryList = new ArrayList();
-            StringBuilder categoryListStr = new StringBuilder();
+            List<String> categoryList = new ArrayList<String>();
             for(int i = 0; i < nodeList.getLength(); i++){
                 Node node = nodeList.item(i);
                 if(node.getNodeType() == Node.ELEMENT_NODE){
                     Element eElement = (Element)node;
                     String category = eElement.getTextContent();
-
-                    ArrayList<String> data = new ArrayList<String>();
-                    data.add(itemID);
-                    data.add(category);
-                    writeToFile("categoryData.csv", data);
-
-                    if(categoryList.size() == 0){
-                        categoryList.add(itemID);
-                    }
-                    categoryListStr.append(category + " ");
+                    categoryList.add(category);                    
                 }
             }
-            categoryList.add(categoryListStr.toString());
-            writeToFile("categoryListData.csv", categoryList);
+
+            parsedItem.category = categoryList;
         }
     }
-    */
+    
     static String convertToSqlDateFormat(String xmlFormattedDate){
         SimpleDateFormat xmlFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
         SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //'1970-01-01 00:00:01' to '2038-01-19 03:14:07'
@@ -282,11 +272,11 @@ class ItemDataParser {
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             Element eElement = (Element) item;
 
+            
+            // populates the item location info
+            getLocation(eElement, parsedItem);
+
             /*
-            // populates the location table
-            getLocation(locationCount, eElement);
-
-
             //populates the seller table
             Node tempNode = eElement.getElementsByTagName("Seller").item(0);
             Element tempElement = (Element)tempNode;
@@ -302,8 +292,8 @@ class ItemDataParser {
             getItem(eElement, parsedItem); // gets a row/tuple of data for Item table
             
             //populates the item's category info
-            //getCategory(eElement, parsedItem); // gets a row/tuple of data for Category table
-            
+            getCategory(eElement, parsedItem); // gets a row/tuple of data for Category table
+
             /*
             //populates the bid and bidder table
             Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
@@ -392,39 +382,21 @@ class ItemDataParser {
 
     }
     */
-    /*
-    //Our helper functions to parse items and bidder  for their locations to form SQL Table 'location'
-    //Uses the location id from getData
-    static void getLocation(int locationID, Element item) {
+    
+    static void getLocation(Element item, Item parsedItem) {
         if (item.getNodeType() == Node.ELEMENT_NODE) {
-            Element locationElement = getElementByTagNameNR( item, "Location"); //need to use NON-recursive, else will get element of children
+            //need to use NON-recursive, else will get element(s) of children
+            Element locationElement = getElementByTagNameNR( item, "Location"); 
             String location = locationElement.getTextContent();
             String latitude = locationElement.getAttribute("Latitude");
             String longitude = locationElement.getAttribute("Longitude");
-            String country = "";
-            if(getElementsByTagNameNR( item,"Country").length > 0) {
-                country = getElementByTagNameNR(item, "Country").getTextContent();
-            }
 
-            ArrayList<String> geoLocation = new ArrayList();
-            String ItemID = item.getAttribute("ItemID");
-            geoLocation.add(ItemID);
-            geoLocation.add(longitude);
-            geoLocation.add(latitude);
-            if(longitude != "" && latitude != "") {
-                writeToFile("geoLocationData.csv", geoLocation);
-            }
-
-            ArrayList<String> data = new ArrayList<String>();
-            data.add(Integer.toString(locationID));
-            data.add(location);
-            data.add(longitude);
-            data.add(latitude);
-            data.add(country);
-            writeToFile("locationData.csv", data);
+            parsedItem.location = location;
+            parsedItem.latitude = latitude;
+            parsedItem.longitude = longitude;
         }
     }
-    */
+    
 
     /* Process one item xml data string.
      */

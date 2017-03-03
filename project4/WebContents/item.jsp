@@ -42,18 +42,30 @@
         <%  Item parsedItem = (Item) request.getAttribute("result");  %>
         <%= parsedItem.itemID %> <br>
         <%= parsedItem.name %> <br>
-        <!-- category --> 
+
+        <% 	for (int i = 0; i < parsedItem.category.size(); i++)  { %>
+            <%= parsedItem.category.get(i) %> <br>
+        <% } %>
+
         $<%= parsedItem.currently %> <br>
         $<%= parsedItem.buy_price %> <br>
         $<%= parsedItem.first_bid %> <br> 
         <%= parsedItem.number_of_bids %> <br>
         <!-- bids -->
-        <!-- location  -->    
+
+        <%= parsedItem.location %> <br>
+        <%= parsedItem.latitude %> <br>
+        <%= parsedItem.longitude%> <br> 
         <%= parsedItem.country %> <br>
+        
         <%= parsedItem.started %> <br>
         <%= parsedItem.ends %> <br>
         <!-- seller -->
         <%= parsedItem.description %> <br>
+
+
+
+
         <div>Debug: <%= request.getAttribute("debug") %></div>
     <% } %>
 

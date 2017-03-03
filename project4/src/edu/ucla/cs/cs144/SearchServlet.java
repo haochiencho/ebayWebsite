@@ -54,7 +54,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
                 debug += values[0];
             }
 
-            //TODO: check if query is empty
+            //TODO: check if query is empty and escape query characters
             if (name.equals("q")) {
                 if(values.length == 0){
                     request.setAttribute("numResultsToSkip", 0);
@@ -76,6 +76,7 @@ public class SearchServlet extends HttpServlet implements Servlet {
                     SearchResult[] sq = AuctionSearch.basicSearch(searchQuery, numResultsToSkip, numResultsToReturn);
                     debug += Integer.toString(sq.length);
                     for(int j = 0; j < sq.length; j++){
+                        //TODO: move the href tags to the jsp, out of servlet
                         queryResults.add("<a href=\"/eBay/item?id=" + sq[j].getItemId() + "\">" + sq[j].getName() + "</a><br>");
                     }
                 }                
