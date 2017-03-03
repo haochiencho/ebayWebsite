@@ -40,21 +40,44 @@
     <% if ( request.getAttribute("result") != null ) { %>
         <div>Result: </div>
         <%  Item parsedItem = (Item) request.getAttribute("result");  %>
-        <%= parsedItem.itemID %> <br>
-        <%= parsedItem.name %> <br>
-        <!-- category --> 
-        $<%= parsedItem.currently %> <br>
-        $<%= parsedItem.buy_price %> <br>
-        $<%= parsedItem.first_bid %> <br> 
-        <%= parsedItem.number_of_bids %> <br>
-        <!-- bids -->
-        <!-- location  -->    
-        <%= parsedItem.country %> <br>
-        <%= parsedItem.started %> <br>
-        <%= parsedItem.ends %> <br>
-        <!-- seller -->
-        <%= parsedItem.description %> <br>
+        ItemID: <%= parsedItem.itemID %> <br>
+        Name: <%= parsedItem.name %> <br>
+
+        Category: <br>
+        <% 	for (int i = 0; i < parsedItem.categories.size(); i++)  { %>
+            <%= parsedItem.categories.get(i) %> <br>
+        <% } %>
+
+        Currently: $<%= parsedItem.currently %> <br>
+        Buy Price: $<%= parsedItem.buy_price %> <br>
+        First Bid: $<%= parsedItem.first_bid %> <br> 
+        Number of Bids: <%= parsedItem.number_of_bids %> <br>
+        
+        <% if (parsedItem.bids != null) { %>
+            Bids: <br><p>
+            <% 	for (int j = 0; j < parsedItem.bids.size(); j++)  { %>
+                BidderID: <%= parsedItem.bids.get(j).bidderID %> <br>
+                BidderRtaing: <%= parsedItem.bids.get(j).bidderRating %> <br>
+                Time: <%= parsedItem.bids.get(j).time %> <br>
+                Amount: <%= parsedItem.bids.get(j).amount %> <br>
+            <% } %>
+        <% } %>
+
+        Location: <%= parsedItem.location %> <br>
+        Latitude: <%= parsedItem.latitude %> <br>
+        Longitude: <%= parsedItem.longitude%> <br> 
+        Country: <%= parsedItem.country %> <br>
+
+        Started: <%= parsedItem.started %> <br>
+        Ends: <%= parsedItem.ends %> <br>
+        
+        SellerID: <%= parsedItem.sellerID %> <br>
+        Seller Rating: <%= parsedItem.sellerRating %> <br>
+
+        Description: <%= parsedItem.description %> <br>
+
         <div>Debug: <%= request.getAttribute("debug") %></div>
+
     <% } %>
 
     <div id="map_canvas" style="width:100%; height:100%"></div>
