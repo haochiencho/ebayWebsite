@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import edu.ucla.cs.cs144.AuctionSearch;
 import edu.ucla.cs.cs144.ItemDataParser;
 import myPackage.Item;
-//import java.util.*;
-//import java.lang.reflect.*;
 
 public class ItemServlet extends HttpServlet implements Servlet {
        

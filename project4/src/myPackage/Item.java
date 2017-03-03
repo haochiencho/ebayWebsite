@@ -1,25 +1,28 @@
 package myPackage;
 
+import myPackage.Bid;
 import java.util.*;
 
 public class Item {
     public Item() {} 
+	//TODO: make member variables private, and use getters/setters in itemServlet+itemDataParser
     //TODO: handle nested items like category, bid, location, seller 
     public String itemID;
     public String name;
-    public List<String> category;
+    public List<String> categories = new ArrayList<String>();
     public String currently;
     public String buy_price;
     public String first_bid;
     public String number_of_bids;
-    //public String Bids
+    public List<Bid> bids = new ArrayList<Bid>();
     public String location;
 	public String latitude;
 	public String longitude;
     public String country;
     public String started;
     public String ends;
-    //public String Seller
+    public String sellerID;
+	public String sellerRating; 
     public String description;
 
     

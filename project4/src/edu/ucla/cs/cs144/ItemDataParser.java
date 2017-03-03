@@ -43,6 +43,7 @@ import org.xml.sax.ErrorHandler;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
 import myPackage.Item;
+import myPackage.Bid;
 import org.xml.sax.InputSource;
 
 class ItemDataParser {
@@ -164,9 +165,6 @@ class ItemDataParser {
         }
     }
     
-    //Our helper functions to parse item nodes for their catgories to form SQL Table 'category'
-    // Uses the item id from getItem to create multiple categories with the same itemID.
-    // Also adds an item to categoryList
     static void getCategory(Element item, Item parsedItem){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             NodeList nodeList = item.getElementsByTagName("Category");
@@ -180,7 +178,7 @@ class ItemDataParser {
                 }
             }
 
-            parsedItem.category = categoryList;
+            parsedItem.categories = categoryList;
         }
     }
     
@@ -197,7 +195,6 @@ class ItemDataParser {
         return sqlDate;
     }
 
-    //Our helper functions to parse item nodes to form SQL Table 'item'
     /**@var sellerID string cannot be casted into an integer */
     static void getItem(Element eElement, Item parsedItem){
         String ItemID = eElement.getAttribute("ItemID");
@@ -220,7 +217,6 @@ class ItemDataParser {
 
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 
-        // List of Strings that are added in the order to be printed
         ArrayList<String> data = new ArrayList<String>();
         parsedItem.setItemID(ItemID);
         parsedItem.setName(Name);
@@ -228,10 +224,8 @@ class ItemDataParser {
         parsedItem.setBuyPrice(Buy_price);
         parsedItem.setFirstBid(First_bid);
         parsedItem.setNumberOfBids(Number_of_bids);
-        //data.add(Integer.toString(locationID));
         parsedItem.setStarted(Started);
         parsedItem.setEnds(Ends);
-        //data.add(sellerID);
         parsedItem.setDescription(Description.substring(0, Math.min(4000, Description.length())));
 
     }
@@ -276,17 +270,10 @@ class ItemDataParser {
             // populates the item location info
             getLocation(eElement, parsedItem);
 
-            /*
-            //populates the seller table
-            Node tempNode = eElement.getElementsByTagName("Seller").item(0);
-            Element tempElement = (Element)tempNode;
-            String sellerIdStr = tempElement.getAttribute("UserID");
-            if(!sellerMap.containsKey(sellerIdStr)){
-                sellerMap.put(sellerIdStr, 0);
-                // call getSeller here
-                getSeller(eElement);
-            }
-            */
+            
+            //populates the seller info
+            getSeller(eElement, parsedItem);
+            
 
             //populates the item info
             getItem(eElement, parsedItem); // gets a row/tuple of data for Item table
@@ -294,56 +281,40 @@ class ItemDataParser {
             //populates the item's category info
             getCategory(eElement, parsedItem); // gets a row/tuple of data for Category table
 
-            /*
-            //populates the bid and bidder table
+            
+            //populates the item's bid(s) info
             Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
             NodeList bidList = bids.getElementsByTagName("Bid");
             for(int j = 0; j < bidList.getLength(); j++){
                 Node bid = bidList.item(j);
                 if (bid.getNodeType() == Node.ELEMENT_NODE){
                     Element bidElement = (Element) bid;
-                    String bidderID = bidElement.getAttribute("UserID");
-                    if ( getBid(bidElement, ItemID, Integer.toString(bidCount), bidderMap, locationCount) == true )
-                        locationCount++;
-                    bidCount++;
+                    getBid(bidElement, parsedItem); 
                 }
             }
-            */
-
-            
             
         } 
 
     }
 
-    /*
-    //Our helper functions to parse bid node to form SQL Table 'bid'
-    static boolean getBid(Element bidElement, String itemID, String bidID, Map<String, Integer> bidderMap, int locationID){
-        if (bidElement.getNodeType() == Node.ELEMENT_NODE) {
-            String Time_xml = bidElement.getElementsByTagName("Time").item(0).getTextContent();
+    
+    static void getBid(Element bid, Item parsedItem) {
+        if (bid.getNodeType() == Node.ELEMENT_NODE) {
+            String Time_xml = bid.getElementsByTagName("Time").item(0).getTextContent();
             String Time = convertToSqlDateFormat(Time_xml);
 
-            String Amount = strip(bidElement.getElementsByTagName("Amount").item(0).getTextContent());
+            String Amount = strip(bid.getElementsByTagName("Amount").item(0).getTextContent());
 
-            Element bidderElement = (Element)bidElement.getElementsByTagName("Bidder").item(0);
+            Element bidderElement = (Element)bid.getElementsByTagName("Bidder").item(0);
             String bidderUserID = bidderElement.getAttribute("UserID");
+            String bidderRating = bidderElement.getAttribute("Rating");
 
-            ArrayList<String> data = new ArrayList<String>();
-            data.add(itemID);
-            data.add(bidderUserID);
-            data.add(bidID);
-            data.add(Time);
-            data.add(Amount);
-            writeToFile("bidData.csv", data);
-
-            return getBidder(bidderUserID, bidderElement, locationID);
+            parsedItem.bids.add(new Bid(bidderUserID, bidderRating, Time, Amount));
         }
-        return false;
     }
-    */
-    /*
-    //Our helper functions to parse item nodes for their sellers to form SQL Table 'seller'
-    static void getSeller(Element item) {
+    
+    
+    static void getSeller(Element item, Item parsedItem) {
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             Node sellerNode = item.getElementsByTagName("Seller").item(0);
             if (sellerNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -351,37 +322,12 @@ class ItemDataParser {
                 String sellerID = eElement.getAttribute("UserID");
                 String rating = eElement.getAttribute("Rating");
 
-                ArrayList<String> data = new ArrayList<String>();
-                data.add(sellerID);
-                data.add(rating);
-                writeToFile("sellerData.csv", data);
+                parsedItem.sellerID = sellerID;
+                parsedItem.sellerRating = rating;
+
             }
         }
     }
-    */
-    /*
-    static boolean getBidder(String bidderID, Element bidderElement, int locationID){
-        boolean getLocationFuncIsCalled = false;
-        String rating = bidderElement.getAttribute("Rating");
-        if(bidderElement.getElementsByTagName("Location").getLength() > 0) {
-            getLocation(locationID, bidderElement);
-            getLocationFuncIsCalled = true;
-        }
-        else{
-            locationID = -1;
-        }
-
-        ArrayList<String> data = new ArrayList<String>();
-        data.add(bidderID);
-        data.add(rating);
-        data.add(Integer.toString(locationID));
-        String home = System.getProperty("user.home");
-        writeToFile("bidderData.csv", data);
-
-        return getLocationFuncIsCalled;
-
-    }
-    */
     
     static void getLocation(Element item, Item parsedItem) {
         if (item.getNodeType() == Node.ELEMENT_NODE) {
@@ -438,9 +384,6 @@ class ItemDataParser {
     }
 
     public static Item parseItemXMLString(String xmlItemData) {
-//        int locationCount = 1;
-//        int bidCount = 1;
-
         /* Initialize parser. */
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
