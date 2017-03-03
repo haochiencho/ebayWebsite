@@ -43,6 +43,7 @@ import org.xml.sax.ErrorHandler;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
 import myPackage.Item;
+import org.xml.sax.InputSource;
 
 class ItemDataParser {
 
@@ -166,7 +167,7 @@ class ItemDataParser {
     //Our helper functions to parse item nodes for their catgories to form SQL Table 'category'
     // Uses the item id from getItem to create multiple categories with the same itemID.
     // Also adds an item to categoryList
-    static void getCategory(String itemID, Element item){
+    static void getCategory(Element item, Item parsedItem){
         if (item.getNodeType() == Node.ELEMENT_NODE) {
             NodeList nodeList = item.getElementsByTagName("Category");
             ArrayList<String> categoryList = new ArrayList();
@@ -276,10 +277,10 @@ class ItemDataParser {
         Map<String, Integer> bidderMap = new HashMap<String, Integer>();
         int[] anArray = new int[2];
 
-        Node Item =  doc.getDocumentElement();
+        Node item =  doc.getDocumentElement();
 
-        if (Item.getNodeType() == Node.ELEMENT_NODE) {
-            Element eElement = (Element) Item;
+        if (item.getNodeType() == Node.ELEMENT_NODE) {
+            Element eElement = (Element) item;
 
             /*
             // populates the location table
@@ -297,13 +298,12 @@ class ItemDataParser {
             }
             */
 
-            //populates the item table
+            //populates the item info
             getItem(eElement, parsedItem); // gets a row/tuple of data for Item table
-            /*
-            //populates the category table
-            String ItemID = eElement.getAttribute("ItemID");
-            getCategory(ItemID, eElement); // gets a row/tuple of data for Category table
-            */
+            
+            //populates the item's category info
+            //getCategory(eElement, parsedItem); // gets a row/tuple of data for Category table
+            
             /*
             //populates the bid and bidder table
             Element bids = (Element) eElement.getElementsByTagName("Bids").item(0);
@@ -432,7 +432,8 @@ class ItemDataParser {
         Document doc = null;
 
         try {
-            doc = builder.parse(xmlItemData);
+            InputSource is = new InputSource(new StringReader(xmlItemData));
+            doc = builder.parse(is);                    
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -440,17 +441,16 @@ class ItemDataParser {
         }
         catch (SAXException e) {
             System.out.println("Parsing error on string " + xmlItemData);
-            System.out.println("  (not supposed to happen with supplied XML files)");
             e.printStackTrace();
             System.exit(3);
         }
-
+        
         /* At this point 'doc' contains a DOM representation of an 'Items' XML
-         * file. Use doc.getDocumentElement() to get the root Element. */
-        System.out.println("Successfully parsed: ");
+         * string. Use doc.getDocumentElement() to get the root Element. */
 
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
+            
         try {
 
             doc.getDocumentElement().normalize();
@@ -462,7 +462,7 @@ class ItemDataParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
     }
 
     public static Item parseItemXMLString(String xmlItemData) {

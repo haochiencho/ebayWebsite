@@ -23,43 +23,25 @@ public class ItemServlet extends HttpServlet implements Servlet {
         String pageTitle = "Item page";
         request.setAttribute("title", pageTitle);
 
-//        String debug = "This is a debug message";
-//        String itemID = "";
-//
-//        if (request.getParameter("id") != null) {
-//            itemID = request.getParameter("id");
-//
-//            String xmlItemData = AuctionSearch.getXMLDataForItemId(itemID);
-//            request.setAttribute("result", xmlItemData);
-//
-//            //parse xml Item data
-//            if (xmlItemData != null ) {
-//                Item parsedItem = ItemDataParser.parseItemXMLString(xmlItemData);
-//                if (parsedItem != null) {
-//                   request.setAttribute("result", parsedItem);
-//                   request.setAttribute("debug", debug);
-//                }
-//            }
-//
-//            /*
-//            //TODO:
-//            Item parsedItem = ItemDataParser.parseItemXMLString(xmlItemData);
-//
-//            try {
-//                Map<String, String> result = new HashMap<String, String>();
-//                for (Field field : parsedItem.getClass().getDeclaredFields()) {
-//                    field.setAccessible(true); // if you want to modify private fields
-//                    // System.out.println(field.getName() + " - " + field.getType()  + " - " + field.get(obj));
-//                    result.put(field.getName(), (String) field.get(parsedItem));
-//                }
-//                request.setAttribute("result", result);
-//            }
-//            catch (IllegalAccessException e) {
-//                System.out.println("Error parsing Item Object");
-//                System.exit(-1);
-//            }
-//            */
-//        }
+        String debug = "This is a debug message";
+        String itemID = "";
+        
+        if (request.getParameter("id") != null) {
+            itemID = request.getParameter("id");
+
+            String xmlItemData = AuctionSearch.getXMLDataForItemId(itemID);
+            
+            //parse xml Item data
+            if (xmlItemData != null ) {
+                Item parsedItem = ItemDataParser.parseItemXMLString(xmlItemData);
+                if (parsedItem != null) {
+                   request.setAttribute("result", parsedItem);
+                   request.setAttribute("debug", debug);
+                }
+            }
+            
+            
+        }
 
         request.getRequestDispatcher("/item.jsp").forward(request, response);
 
