@@ -30,7 +30,6 @@ public class ItemServlet extends HttpServlet implements Servlet {
             itemID = request.getParameter("id");
 
             String xmlItemData = AuctionSearch.getXMLDataForItemId(itemID);
-            request.setAttribute("result", xmlItemData);
             
             //parse xml Item data
             if (xmlItemData != null ) {
@@ -41,24 +40,7 @@ public class ItemServlet extends HttpServlet implements Servlet {
                 }
             }
             
-            /*
-            //TODO:
-            Item parsedItem = ItemDataParser.parseItemXMLString(xmlItemData);
-
-            try {
-                Map<String, String> result = new HashMap<String, String>();
-                for (Field field : parsedItem.getClass().getDeclaredFields()) {
-                    field.setAccessible(true); // if you want to modify private fields
-                    // System.out.println(field.getName() + " - " + field.getType()  + " - " + field.get(obj));
-                    result.put(field.getName(), (String) field.get(parsedItem));
-                }
-                request.setAttribute("result", result);
-            }
-            catch (IllegalAccessException e) {
-                System.out.println("Error parsing Item Object");
-                System.exit(-1);
-            }
-            */
+            
         }
 
         request.getRequestDispatcher("/item.jsp").forward(request, response);

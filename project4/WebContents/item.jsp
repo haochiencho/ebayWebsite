@@ -43,9 +43,9 @@
         <%= parsedItem.itemID %> <br>
         <%= parsedItem.name %> <br>
         <!-- category --> 
-        <%= parsedItem.currently %> <br>
-        <%= parsedItem.buy_price %> <br>
-        <%= parsedItem.first_bid %> <br> 
+        $<%= parsedItem.currently %> <br>
+        $<%= parsedItem.buy_price %> <br>
+        $<%= parsedItem.first_bid %> <br> 
         <%= parsedItem.number_of_bids %> <br>
         <!-- bids -->
         <!-- location  -->    

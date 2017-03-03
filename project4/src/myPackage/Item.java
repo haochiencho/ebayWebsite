@@ -2,7 +2,7 @@ package myPackage;
 
 import java.util.ArrayList;
 
-public class Item extends java.lang.Object {
+public class Item {
     public Item() {} 
     //TODO: handle nested items like category, bid, location, seller 
     public String itemID;
