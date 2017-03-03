@@ -18,7 +18,16 @@
             <input type="text" name="q" class="col-md-8 col-md-offset-2" id="search_box" placeholder=<%= request.getAttribute("placeholder") %> >
             <input type="submit" value="Submit"> <br>
         </form>
-
+        <div class="suggestions">
+            <div class="current">Maine</div>
+            <div>Maryland</div>
+            <div>Massachusetts</div>
+            <div>Michigan</div>
+            <div>Minnesota</div>
+            <div>Mississippi</div>
+            <div>Missouri</div>
+            <div>Montana</div>
+        </div>
     </div>
 
     <div class="result_box">
@@ -46,7 +55,79 @@
     <div>Debug: <%= request.getAttribute("debug") %></div>
     <script>
 
-        var UIcontroller = function(){
+        // auto suggest drop down menu
+        function AutoSuggestControl(oTextbox, oProvider, div, utilCtrl) {
+            this.layer = div;
+            this.provider = oProvider;
+            this.textbox = oTextbox;
+            this.utilCtrl = utilCtrl;
+//            this.init();
+        };
+
+
+        AutoSuggestControl.prototype.showSuggestions = function () {
+            this.layer.style.visibility = "visible";
+        };
+
+        AutoSuggestControl.prototype.hideSuggestions = function () {
+            this.layer.style.visibility = "hidden";
+        };
+
+        AutoSuggestControl.prototype.highlightSuggestion = function (oSuggestionNode) {
+
+            for (var i=0; i < this.layer.childNodes.length; i++) {
+                var oNode = this.layer.childNodes[i];
+                if (oNode == oSuggestionNode) {
+                    oNode.className = "current"
+                } else if (oNode.className == "current") {
+                    oNode.className = "";
+                }
+            }
+        };
+
+        AutoSuggestControl.prototype.createDropDown = function (suggestions) {
+            // delete children nodes
+            this.utilCtrl.deleteChildren(this.layer);
+
+            if(suggestions.length > 0){
+                for (i = 0; i < suggestions.length ;i++) {
+                    var suggestion = this.utilCtrl.getData(suggestions, i);
+                    var html = '<div>' +
+                        suggestion + '</div>';
+                    this.layer.insertAdjacentHTML( 'beforeend', html);
+                }
+            } else{
+                this.layer.style.visibility = "hidden";
+            }
+
+            this.layer.style.width = this.textbox.offsetWidth;
+
+            // here
+            //TODO: limit number of result displays (optional)
+            //TODO: set highlight node to be top result by default
+
+            // elsewhere
+            //TODO: add event listeners for arrows, mouse click, and enter
+                // mouse click and enter should perform search
+            //TODO: design: move suggestion under search bar
+        };
+
+        var htmlUtiltyController = (function(){
+            return {
+                getData: function(suggestionArr, index){
+                    return suggestionArr[index].getAttribute('data');
+                },
+
+                deleteChildren: function(el){
+                    while (el.firstChild) {
+                        el.removeChild(el.firstChild);
+                    }
+                }
+            }
+        })();
+
+        var UIcontroller = (function(utilCtrl){
+
             var initEventListeners = function(){
                 document.addEventListener('keyup', function(event) {
                     sendAjaxRequest();
@@ -61,26 +142,30 @@
                 var DOM = document.querySelector('.result_box');
 
                 // delete all children
-                while (DOM.firstChild) {
-                    DOM.removeChild(DOM.firstChild);
-                }
+                utilCtrl.deleteChildren(DOM);
 
                 parser = new DOMParser();
-                console.log(parser);
-                console.log(str);
                 xmlDoc = parser.parseFromString(str,"text/xml");
-                console.log(xmlDoc);
 
                 var suggestions = xmlDoc.getElementsByTagName('suggestion');
 
                 for (i = 0; i < suggestions.length ;i++) {
-                    var suggestion = suggestions[i].getAttribute('data');
+                    var suggestion = utilCtrl.getData(suggestions, i);
                     var html = '<div class="result well col-md-8 col-md-offset-2">' +
                         suggestion + '</div>';
                     DOM.insertAdjacentHTML( 'beforeend', html);
                 }
                 // TODO: parse xml and display top results
+
+                // auto suggest drop down menu
+                var textBoxEl = document.getElementById('search_box');
+                var dataProvider = "something";
+                var div = document.querySelector('div.suggestions');
+                var autoObj = new AutoSuggestControl(textBoxEl, dataProvider, div, utilCtrl);
+                console.log(autoObj);
+                autoObj.createDropDown(suggestions);
             };
+
 
             var sendAjaxRequest = function(){
                 var query = document.getElementById('search_box').value;
@@ -106,15 +191,15 @@
             };
 
 
-
             return {
                 init: function(){
                     initEventListeners();
                 }
             };
-        }();
+        })(htmlUtiltyController);
 
         UIcontroller.init();
+
     </script>
 </body>
 </html>
@@ -135,5 +220,18 @@
     .title_box{
         margin-bottom: 25px;
     }
-
+    div.suggestions {
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: 1px solid black;
+        position: absolute;
+    }
+    div.suggestions div {
+        cursor: default;
+        padding: 0px 3px;
+    }
+    div.suggestions div.current {
+        background-color: #3366cc;
+        color: white;
+    }
 </style>
