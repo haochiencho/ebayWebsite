@@ -58,43 +58,27 @@
              * @param str           string to be placed in div
              */
             function displayResult(str){
-                var html = '<div class="result well col-md-8 col-md-offset-2">' +
-                    str + '</div>';
                 var DOM = document.querySelector('.result_box');
 
                 // delete all children
                 while (DOM.firstChild) {
                     DOM.removeChild(DOM.firstChild);
                 }
-                console.log(DOM);
-                DOM.insertAdjacentHTML( 'beforeend', html);
-
 
                 parser = new DOMParser();
+                console.log(parser);
+                console.log(str);
                 xmlDoc = parser.parseFromString(str,"text/xml");
-
-                DOM.innerHTML =
-                    myLoop(xmlDoc.documentElement);
-
-                function myLoop(x) {
-                    var i, y, xLen, txt;
-                    txt = "";
-                    x = x.childNodes;
-                    xLen = x.length;
-                    for (i = 0; i < xLen ;i++) {
-                        y = x[i];
-                        if (y.nodeType != 3) {
-                            if (y.childNodes[0] != undefined) {
-                                txt += myLoop(y);
-                            }
-                        } else {
-                            txt += y.nodeValue + "<br>";
-                        }
-                    }
-                    return txt;
-                }
                 console.log(xmlDoc);
 
+                var suggestions = xmlDoc.getElementsByTagName('suggestion');
+
+                for (i = 0; i < suggestions.length ;i++) {
+                    var suggestion = suggestions[i].getAttribute('data');
+                    var html = '<div class="result well col-md-8 col-md-offset-2">' +
+                        suggestion + '</div>';
+                    DOM.insertAdjacentHTML( 'beforeend', html);
+                }
                 // TODO: parse xml and display top results
             };
 
@@ -109,10 +93,7 @@
                     var showSuggestion = function(){
                         if(xmlHttp.readyState == 4) {
                             var response = xmlHttp.responseText;
-                            response = response.replace(/</g, "&lt");
-                            response = response.replace(/>/g, "&gt");
                             document.getElementById("suggestion").interHTML = response;
-                            console.log(response);
                             // TODO: parse xml and display info
                             displayResult(response);
                         }
