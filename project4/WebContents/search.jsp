@@ -45,6 +45,7 @@
 
     <div>Debug: <%= request.getAttribute("debug") %></div>
     <script>
+
         var UIcontroller = function(){
             var initEventListeners = function(){
                 document.addEventListener('keyup', function(event) {
@@ -66,6 +67,7 @@
                         response = response.replace(/>/g, "&gt");
                         document.getElementById("suggestion").interHTML = response;
                         console.log(response);
+                        // TODO: parse xml and display info
                     }
                 };
 
