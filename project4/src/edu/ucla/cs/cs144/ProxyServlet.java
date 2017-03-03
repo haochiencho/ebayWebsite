@@ -39,7 +39,6 @@ public class ProxyServlet extends HttpServlet implements Servlet {
             String responseBody = scanner.useDelimiter("\\A").next();
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("text/xml");
-//            if(responseBody.length() > 0 && !(responseBody.substring(0,7).equals("<script>")))
             response.getWriter().write(responseBody);
         }
     }
