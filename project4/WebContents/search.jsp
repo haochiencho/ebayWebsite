@@ -49,33 +49,79 @@
         var UIcontroller = function(){
             var initEventListeners = function(){
                 document.addEventListener('keyup', function(event) {
-                    // TODO: make request to proxy server
                     sendAjaxRequest();
                 });
             };
 
+            /**
+             *
+             * @param str           string to be placed in div
+             */
+            function displayResult(str){
+                var html = '<div class="result well col-md-8 col-md-offset-2">' +
+                    str + '</div>';
+                var DOM = document.querySelector('.result_box');
+
+                // delete all children
+                while (DOM.firstChild) {
+                    DOM.removeChild(DOM.firstChild);
+                }
+                console.log(DOM);
+                DOM.insertAdjacentHTML( 'beforeend', html);
+
+
+                parser = new DOMParser();
+                xmlDoc = parser.parseFromString(str,"text/xml");
+
+                DOM.innerHTML =
+                    myLoop(xmlDoc.documentElement);
+
+                function myLoop(x) {
+                    var i, y, xLen, txt;
+                    txt = "";
+                    x = x.childNodes;
+                    xLen = x.length;
+                    for (i = 0; i < xLen ;i++) {
+                        y = x[i];
+                        if (y.nodeType != 3) {
+                            if (y.childNodes[0] != undefined) {
+                                txt += myLoop(y);
+                            }
+                        } else {
+                            txt += y.nodeValue + "<br>";
+                        }
+                    }
+                    return txt;
+                }
+                console.log(xmlDoc);
+
+                // TODO: parse xml and display top results
+            };
+
             var sendAjaxRequest = function(){
                 var query = document.getElementById('search_box').value;
-                var ajax_request = "/eBay/suggest?output=toolbar&q=" + encodeURI(query);
 
-                var xmlHttp = new XMLHttpRequest();
+                if(query !== ""){
+                    var ajax_request = "/eBay/suggest?output=toolbar&q=" + encodeURI(query);
 
-                var showSuggestion = function(){
-                    if(xmlHttp.readyState == 4) {
-                        var response = xmlHttp.responseText;
-                        response = response.replace(/</g, "&lt");
-                        response = response.replace(/>/g, "&gt");
-                        document.getElementById("suggestion").interHTML = response;
-                        console.log(response);
-                        // TODO: parse xml and display info
-                    }
-                };
+                    var xmlHttp = new XMLHttpRequest();
 
-                xmlHttp.open("GET", ajax_request);
-                xmlHttp.onreadystatechange = showSuggestion;
-                xmlHttp.send();
+                    var showSuggestion = function(){
+                        if(xmlHttp.readyState == 4) {
+                            var response = xmlHttp.responseText;
+                            response = response.replace(/</g, "&lt");
+                            response = response.replace(/>/g, "&gt");
+                            document.getElementById("suggestion").interHTML = response;
+                            console.log(response);
+                            // TODO: parse xml and display info
+                            displayResult(response);
+                        }
+                    };
 
-//                console.log(ajax_request);
+                    xmlHttp.open("GET", ajax_request);
+                    xmlHttp.onreadystatechange = showSuggestion;
+                    xmlHttp.send();
+                }
             };
 
 
