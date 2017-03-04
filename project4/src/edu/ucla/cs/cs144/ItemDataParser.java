@@ -215,6 +215,7 @@ class ItemDataParser {
         String Started = convertToSqlDateFormat(Started_xml);
         String Ends = convertToSqlDateFormat(Ends_xml);
 
+        String Country = getElementByTagNameNR( eElement, "Country").getTextContent(); 
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 
         ArrayList<String> data = new ArrayList<String>();
@@ -226,6 +227,7 @@ class ItemDataParser {
         parsedItem.setNumberOfBids(Number_of_bids);
         parsedItem.setStarted(Started);
         parsedItem.setEnds(Ends);
+        parsedItem.setCountry(Country);
         parsedItem.setDescription(Description.substring(0, Math.min(4000, Description.length())));
 
     }
@@ -308,8 +310,20 @@ class ItemDataParser {
             Element bidderElement = (Element)bid.getElementsByTagName("Bidder").item(0);
             String bidderUserID = bidderElement.getAttribute("UserID");
             String bidderRating = bidderElement.getAttribute("Rating");
+            String bidderLatitude = getElementByTagNameNR( bidderElement, "Location").getAttribute("Latitude"); 
+            String bidderLongitude = getElementByTagNameNR( bidderElement, "Location").getAttribute("Longitude");
+            String bidderCountry = getElementByTagNameNR( bidderElement, "Country").getTextContent();
 
-            parsedItem.bids.add(new Bid(bidderUserID, bidderRating, Time, Amount));
+            Bid oneBid = new Bid(bidderUserID, bidderRating, Time, Amount);
+            if (bidderLatitude != null)
+                oneBid.bidderLatitude = bidderLatitude;
+            if (bidderLongitude != null)
+                oneBid.bidderLongitude = bidderLongitude;
+            if (bidderCountry != null)
+                oneBid.bidderCountry = bidderCountry;
+            
+            parsedItem.bids.add(oneBid);
+                
         }
     }
     
