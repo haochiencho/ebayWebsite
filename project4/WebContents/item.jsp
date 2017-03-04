@@ -70,7 +70,7 @@
             <td>Category</td>
             <td>
                 <% for (int i = 0; i < parsedItem.categories.size()-1; i++)  { %>
-                    <%= parsedItem.categories.get(i) %>, &nbsp;
+                    <%= parsedItem.categories.get(i) %>; &nbsp;
                 <% } %>
                 <%= parsedItem.categories.get(parsedItem.categories.size()-1) %>
             </td>

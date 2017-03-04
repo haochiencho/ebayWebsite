@@ -215,6 +215,7 @@ class ItemDataParser {
         String Started = convertToSqlDateFormat(Started_xml);
         String Ends = convertToSqlDateFormat(Ends_xml);
 
+        String Country = getElementByTagNameNR( eElement, "Country").getTextContent(); 
         String Description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 
         ArrayList<String> data = new ArrayList<String>();
@@ -226,6 +227,7 @@ class ItemDataParser {
         parsedItem.setNumberOfBids(Number_of_bids);
         parsedItem.setStarted(Started);
         parsedItem.setEnds(Ends);
+        parsedItem.setCountry(Country);
         parsedItem.setDescription(Description.substring(0, Math.min(4000, Description.length())));
 
     }
