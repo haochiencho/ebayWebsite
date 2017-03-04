@@ -15,7 +15,12 @@
         <form action="search" method="GET">
             <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
             <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
-            <input type="text" name="q" class="col-md-8 col-md-offset-2" id="search_box" placeholder=<%= request.getAttribute("placeholder") %> >
+            <input list="suggestions" name="q" class="col-md-8 col-md-offset-2" id="search_box" placeholder=<%= request.getAttribute("placeholder") %> >
+            <datalist onchange="this.form.submit()" id="suggestions">
+                <option value="Maine">
+                <option value="Maryland">
+                <option value="Massachusetts">
+            </datalist>
             <input type="submit" value="Submit"> <br>
         </form>
         <div class="suggestions">
@@ -146,9 +151,6 @@
                         node.previousElementSibling.classList.add('current');
                         node.classList.remove('current');
                     }
-                    console.log(node);
-
-                    console.log('up');
                 }
                 if(event.keyCode === 40){
                     // down key
@@ -157,8 +159,6 @@
                         node.nextElementSibling.classList.add('current');
                         node.classList.remove('current');
                     }
-                    console.log(node);
-                    console.log('down');
                 }
                 event.preventDefault();
             }
@@ -195,6 +195,28 @@
 
             };
 
+//            <datalist onchange="this.form.submit()" id="suggestions">
+//                <option value="Maine">
+//                <option value="Maryland">
+//                <option value="Massachusetts">
+//            </datalist>
+
+            function newDropDown(suggestions){
+                var parentNode = document.getElementById('suggestions');
+
+                // delete children nodes
+                while (parentNode.firstChild) {
+                    parentNode.removeChild(parentNode.firstChild);
+                }
+
+                for (i = 0; i < Math.min(suggestions.length, 7);i++) {
+                    var suggestion = suggestions[i].getAttribute('data');
+                    var html = '<option value="' +
+                        suggestion + '">';
+                    parentNode.insertAdjacentHTML( 'beforeend', html);
+                }
+            }
+
             /**
              *
              * @param str           string to be placed in div
@@ -216,7 +238,6 @@
                         suggestion + '</div>';
                     DOM.insertAdjacentHTML( 'beforeend', html);
                 }
-                // TODO: parse xml and display top results
 
                 // auto suggest drop down menu
                 var textBoxEl = document.getElementById('search_box');
@@ -225,8 +246,12 @@
                 var autoObj = new AutoSuggestControl(textBoxEl, dataProvider, div, utilCtrl);
                 console.log(autoObj);
                 autoObj.createDropDown(suggestions);
+
+                // TODO: update with suggestions here
+                newDropDown(suggestions);
+
                 addEventSearchClick('.drop_down_node');
-            };
+            }
 
 
             var sendAjaxRequest = function(){
