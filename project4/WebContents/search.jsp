@@ -15,7 +15,8 @@
         <form action="search" method="GET">
             <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
             <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
-            <input list="suggestions" name="q" class="col-md-8 col-md-offset-2" id="search_box" placeholder=<%= request.getAttribute("placeholder") %> >
+            <input list="suggestions" name="q" class="col-md-8 col-md-offset-2" id="search_box" autocomplete="off"
+                   placeholder=<%= request.getAttribute("placeholder") %> >
             <datalist onchange="this.form.submit()" id="suggestions">
                 <option value="Maine">
                 <option value="Maryland">
@@ -23,7 +24,7 @@
             </datalist>
             <input type="submit" value="Submit"> <br>
         </form>
-        <div class="suggestions">
+        <div class="suggestions" style="display: none;">
             <div class="current">Maine</div>
             <div>Maryland</div>
             <div>Massachusetts</div>
@@ -39,7 +40,7 @@
     <%@ page import="java.util.ArrayList" %>
     <% ArrayList<String> list = (ArrayList<String>) request.getAttribute("result"); %>
     <% for (int i = 0; i < list.size(); i++) { %>
-        <div class="result well col-md-8 col-md-offset-2">
+        <div class="result well col-md-8 col-md-offset-2 medium-font">
         <%= list.get(i) %>
         </div>
     <% } %>
@@ -51,13 +52,13 @@
                 <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
                 <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
                 <input type="hidden" name="q" value=<%= request.getAttribute("q") %> >
-                <input type="submit" class="next-btn btn-primary col-md-1 col-md-offset-9" value="Next"> <br>
+                <input type="submit" class="next-btn btn-primary col-md-1 col-md-offset-9" value="Next" style="visibility: hidden;"> <br>
             </form>
         </div>
     </div>
-    <pre id="suggestion"></pre>
+    <pre id="suggestion" style="visibility: hidden;"></pre>
 
-    <div>Debug: <%= request.getAttribute("debug") %></div>
+    <%--<div>Debug: <%= request.getAttribute("debug") %></div>--%>
     <script>
 
         // auto suggest drop down menu
@@ -109,9 +110,8 @@
 
             this.layer.style.width = this.textbox.offsetWidth;
 
-            //TODO: add event listeners for arrows, mouse click, and enter
-                // mouse click and enter should perform search
-            //TODO: design: move suggestion under search bar
+            // always hides
+            this.layer.style.visibility = "hidden";
         };
 
         var htmlUtiltyController = (function(){
@@ -195,12 +195,6 @@
 
             };
 
-//            <datalist onchange="this.form.submit()" id="suggestions">
-//                <option value="Maine">
-//                <option value="Maryland">
-//                <option value="Massachusetts">
-//            </datalist>
-
             function newDropDown(suggestions){
                 var parentNode = document.getElementById('suggestions');
 
@@ -232,9 +226,13 @@
 
                 var suggestions = xmlDoc.getElementsByTagName('suggestion');
 
+                if(suggestions.length > 0){
+                    document.querySelector('.next-btn').style.visibility = 'visible';
+                }
+
                 for (i = 0; i < suggestions.length ;i++) {
                     var suggestion = utilCtrl.getData(suggestions, i);
-                    var html = '<div class="result well col-md-8 col-md-offset-2">' +
+                    var html = '<div class="result well col-md-8 col-md-offset-2 medium-font">' +
                         suggestion + '</div>';
                     DOM.insertAdjacentHTML( 'beforeend', html);
                 }
@@ -266,7 +264,6 @@
                         if(xmlHttp.readyState == 4) {
                             var response = xmlHttp.responseText;
                             document.getElementById("suggestion").interHTML = response;
-                            // TODO: parse xml and display info
                             displayResult(response);
                         }
                     };
@@ -319,5 +316,9 @@
     div.suggestions div.current {
         background-color: #3366cc;
         color: white;
+    }
+
+    .medium-font {
+        font-size: 18px;
     }
 </style>
