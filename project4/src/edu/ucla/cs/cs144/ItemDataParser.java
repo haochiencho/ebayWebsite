@@ -308,8 +308,20 @@ class ItemDataParser {
             Element bidderElement = (Element)bid.getElementsByTagName("Bidder").item(0);
             String bidderUserID = bidderElement.getAttribute("UserID");
             String bidderRating = bidderElement.getAttribute("Rating");
+            String bidderLatitude = getElementByTagNameNR( bidderElement, "Location").getAttribute("Latitude"); 
+            String bidderLongitude = getElementByTagNameNR( bidderElement, "Location").getAttribute("Longitude");
+            String bidderCountry = getElementByTagNameNR( bidderElement, "Country").getTextContent();
 
-            parsedItem.bids.add(new Bid(bidderUserID, bidderRating, Time, Amount));
+            Bid oneBid = new Bid(bidderUserID, bidderRating, Time, Amount);
+            if (bidderLatitude != null)
+                oneBid.bidderLatitude = bidderLatitude;
+            if (bidderLongitude != null)
+                oneBid.bidderLongitude = bidderLongitude;
+            if (bidderCountry != null)
+                oneBid.bidderCountry = bidderCountry;
+            
+            parsedItem.bids.add(oneBid);
+                
         }
     }
     

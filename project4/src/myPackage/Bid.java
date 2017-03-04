@@ -13,4 +13,7 @@ public class Bid {
     public String bidderRating;
     public String time;
     public String amount; 
+    public String bidderLatitude;
+    public String bidderLongitude;
+    public String bidderCountry;
 }

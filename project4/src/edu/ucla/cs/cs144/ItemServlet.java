@@ -30,7 +30,7 @@ public class ItemServlet extends HttpServlet implements Servlet {
             String xmlItemData = AuctionSearch.getXMLDataForItemId(itemID);
             
             //parse xml Item data
-            if (xmlItemData != null ) {
+            if (xmlItemData != null && xmlItemData != "" ) {
                 Item parsedItem = ItemDataParser.parseItemXMLString(xmlItemData);
                 if (parsedItem != null) {
                    request.setAttribute("result", parsedItem);
