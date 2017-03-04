@@ -61,7 +61,6 @@
             this.provider = oProvider;
             this.textbox = oTextbox;
             this.utilCtrl = utilCtrl;
-//            this.init();
         };
 
 
@@ -90,10 +89,13 @@
             this.utilCtrl.deleteChildren(this.layer);
 
             if(suggestions.length > 0){
-                for (i = 0; i < suggestions.length ;i++) {
+                this.layer.style.visibility = "visible";
+                for (i = 0; i < Math.min(suggestions.length, 7);i++) {
                     var suggestion = this.utilCtrl.getData(suggestions, i);
-                    var html = '<div>' +
-                        suggestion + '</div>';
+                    var html = '<div class="drop_down_node';
+                    if(i === 0)
+                        html += ' current';
+                    html += '">' + suggestion + '</div>';
                     this.layer.insertAdjacentHTML( 'beforeend', html);
                 }
             } else{
@@ -102,11 +104,6 @@
 
             this.layer.style.width = this.textbox.offsetWidth;
 
-            // here
-            //TODO: limit number of result displays (optional)
-            //TODO: set highlight node to be top result by default
-
-            // elsewhere
             //TODO: add event listeners for arrows, mouse click, and enter
                 // mouse click and enter should perform search
             //TODO: design: move suggestion under search bar
@@ -128,10 +125,74 @@
 
         var UIcontroller = (function(utilCtrl){
 
+            function redirectQuery(inputQuery){
+                var url = window.location.href;
+                var urlArr = url.split('?');
+                console.log(urlArr[0]);
+
+                window.location.replace(urlArr[0] + '?' + encodeURI(inputQuery));
+            }
+
+            function eventListenerHelper(event){
+                if (event.keyCode === 13) {
+                    // enter key
+                    var query = document.getElementById('search_box').value;
+                    redirectQuery('numResultsToSkip=0&numResultsToReturn=20&q=' + query);
+                }
+                if (event.keyCode === 38){
+                    // up key
+                    let node = document.querySelector('.current');
+                    if(node.previousElementSibling !== null){
+                        node.previousElementSibling.classList.add('current');
+                        node.classList.remove('current');
+                    }
+                    console.log(node);
+
+                    console.log('up');
+                }
+                if(event.keyCode === 40){
+                    // down key
+                    let node = document.querySelector('.current');
+                    if(node.nextElementSibling !== null) {
+                        node.nextElementSibling.classList.add('current');
+                        node.classList.remove('current');
+                    }
+                    console.log(node);
+                    console.log('down');
+                }
+                event.preventDefault();
+            }
+
+            var addEventSearch = function(){
+                document.addEventListener('keyup', function(event){
+                    eventListenerHelper(event);
+                });
+
+                document.getElementById('search_box').addEventListener('keyup', function(event){
+                    eventListenerHelper(event);
+                });
+            };
+
             var initEventListeners = function(){
                 document.addEventListener('keyup', function(event) {
-                    sendAjaxRequest();
+                    if(event.keyCode !== 13 && event.keyCode !== 38 && event.keyCode !== 40)
+                        sendAjaxRequest();
                 });
+                addEventSearch();
+            };
+
+            var addEventSearchClick = function(query){
+                console.log(query);
+
+                var nodes = document.querySelectorAll(query);
+
+                for(let node of nodes){
+                    node.addEventListener('click', function(event){
+                        var query = event.target.textContent;
+                        redirectQuery('numResultsToSkip=0&numResultsToReturn=20&q=' + query);
+                    });
+                }
+
             };
 
             /**
@@ -164,6 +225,7 @@
                 var autoObj = new AutoSuggestControl(textBoxEl, dataProvider, div, utilCtrl);
                 console.log(autoObj);
                 autoObj.createDropDown(suggestions);
+                addEventSearchClick('.drop_down_node');
             };
 
 
@@ -217,14 +279,13 @@
     form a{
         margin: auto;
     }
-    .title_box{
-        margin-bottom: 25px;
-    }
     div.suggestions {
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         border: 1px solid black;
         position: absolute;
+        z-index: -1;
+
     }
     div.suggestions div {
         cursor: default;
