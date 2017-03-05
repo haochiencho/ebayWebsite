@@ -133,7 +133,6 @@
             function redirectQuery(inputQuery){
                 var url = window.location.href;
                 var urlArr = url.split('?');
-                console.log(urlArr[0]);
 
                 window.location.replace(urlArr[0] + '?' + encodeURI(inputQuery));
             }
@@ -182,7 +181,6 @@
             };
 
             var addEventSearchClick = function(query){
-                console.log(query);
 
                 var nodes = document.querySelectorAll(query);
 
@@ -242,7 +240,6 @@
                 var dataProvider = "something";
                 var div = document.querySelector('div.suggestions');
                 var autoObj = new AutoSuggestControl(textBoxEl, dataProvider, div, utilCtrl);
-                console.log(autoObj);
                 autoObj.createDropDown(suggestions);
 
                 // TODO: update with suggestions here
@@ -274,15 +271,20 @@
                 }
             };
 
-
             return {
                 init: function(){
                     initEventListeners();
+                },
+
+                hideOrShowNext: function(){
+                    if(document.querySelector('.result_box').firstElementChild !== null)
+                        document.querySelector('.next-btn').style.visibility = 'visible';
                 }
             };
         })(htmlUtiltyController);
 
         UIcontroller.init();
+        UIcontroller.hideOrShowNext();
 
     </script>
 </body>
