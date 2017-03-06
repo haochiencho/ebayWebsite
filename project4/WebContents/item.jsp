@@ -48,7 +48,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body onload="initialize()">
-    This is the item id page. Display specific item here.
 
     <div>Result: </div>
 

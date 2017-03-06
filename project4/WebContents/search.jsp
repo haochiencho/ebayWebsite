@@ -18,9 +18,6 @@
             <input list="suggestions" name="q" class="col-md-8 col-md-offset-2" id="search_box" autocomplete="off"
                    placeholder="<%= request.getAttribute("placeholder") %>" >
             <datalist onchange="this.form.submit()" id="suggestions">
-                <option value="Maine">
-                <option value="Maryland">
-                <option value="Massachusetts">
             </datalist>
             <input type="submit" value="Submit"> <br>
         </form>
@@ -223,6 +220,7 @@
 
                 var suggestions = xmlDoc.getElementsByTagName('suggestion');
 
+                /*
                 if(suggestions.length > 0){
                     document.querySelector('.next-btn').style.visibility = 'visible';
                 }
@@ -232,7 +230,7 @@
                     var html = '<div class="result well col-md-8 col-md-offset-2 medium-font">' +
                         suggestion + '</div>';
                     DOM.insertAdjacentHTML( 'beforeend', html);
-                }
+                }*/
 
                 // auto suggest drop down menu
                 var textBoxEl = document.getElementById('search_box');
