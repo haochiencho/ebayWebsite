@@ -16,7 +16,7 @@
             <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
             <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
             <input list="suggestions" name="q" class="col-md-8 col-md-offset-2" id="search_box" autocomplete="off"
-                   placeholder=<%= request.getAttribute("placeholder") %> >
+                   placeholder="<%= request.getAttribute("placeholder") %>" >
             <datalist onchange="this.form.submit()" id="suggestions">
                 <option value="Maine">
                 <option value="Maryland">
@@ -51,14 +51,13 @@
             <form action="search" method="GET">
                 <input type="hidden" name="numResultsToSkip" value=<%= request.getAttribute("numResultsToSkip") %> >
                 <input type="hidden" name="numResultsToReturn" value=<%= request.getAttribute("numResultsToReturn") %> >
-                <input type="hidden" name="q" value=<%= request.getAttribute("q") %> >
+                <input type="hidden" name="q" value="<%= request.getAttribute("q") %>" >
                 <input type="submit" class="next-btn btn-primary col-md-1 col-md-offset-9" value="Next" style="visibility: hidden;"> <br>
             </form>
         </div>
     </div>
     <pre id="suggestion" style="visibility: hidden;"></pre>
 
-    <%--<div>Debug: <%= request.getAttribute("debug") %></div>--%>
     <script>
 
         // auto suggest drop down menu
