@@ -242,7 +242,6 @@
                 var autoObj = new AutoSuggestControl(textBoxEl, dataProvider, div, utilCtrl);
                 autoObj.createDropDown(suggestions);
 
-                // TODO: update with suggestions here
                 newDropDown(suggestions);
 
                 addEventSearchClick('.drop_down_node');

@@ -54,7 +54,6 @@ public class SearchServlet extends HttpServlet implements Servlet {
                 debug += values[0];
             }
 
-            //TODO: check if query is empty and escape query characters
             if (name.equals("q")) {
                 if(values.length == 0){
                     request.setAttribute("numResultsToSkip", 0);

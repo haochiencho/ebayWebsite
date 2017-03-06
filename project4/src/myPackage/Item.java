@@ -6,7 +6,6 @@ import java.util.*;
 public class Item {
     public Item() {} 
 	//TODO: make member variables private, and use getters/setters in itemServlet+itemDataParser
-    //TODO: handle nested items like category, bid, location, seller 
     public String itemID;
     public String name;
     public List<String> categories = new ArrayList<String>();

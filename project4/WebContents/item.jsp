@@ -15,7 +15,7 @@
             var latlng;
             var latitude = '<% Item thisItem = (Item) request.getAttribute("result"); %> <%= thisItem.latitude %>';
             if ( isNaN(parseFloat(latitude)) )
-                latitude = 34.063509;
+                latitude = 34.063509; //Default latlng to Westwood
             else 
                 latitude = parseFloat(latitude);
             
@@ -196,8 +196,6 @@
                 </table><br>         
             <% } %>
         <% } %>
-            
-        <div>Debug: <%= request.getAttribute("debug") %></div>
 
     <% } %>
 
