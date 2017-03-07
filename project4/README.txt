@@ -1,0 +1,1 @@
+Implemented ebay search page and item page with Java Servlets(Controller) and Java Server Pages(View). Attached Javascript event listeners to asynchronously load suggests from google suggest server. Built a proxy server to support JavaScript's same-origin policy. Sent requests via the RESTful API as well as AJAX requests and added google maps API to display item location.
