@@ -1,0 +1,8 @@
+val lines = sc.textFile("twitter.edges")
+val followers = lines.map(line=> line.slice(line.indexOf(": ") + 2, line.length))
+val users = followers.flatMap(line=>line.split(","))
+val users1s = users.map(user=> (user,1))
+val userCounts = users1s.reduceByKey((a,b) => a+b)
+val popularUsers = userCounts.filter( { case (user, count) => { count>1000 } } )
+popularUsers.saveAsTextFile("output")
+System.exit(0)
