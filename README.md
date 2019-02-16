@@ -11,3 +11,6 @@ Queried our mySQL databases with JDBC. Built indexes on top of exists databases 
 
 #### part 4: Java Servlets, Java Server Pages, JavaScript, AJAX, DOM, Google Maps, Google Suggest
 Implemented ebay search page and item page with Java Servlets(Controller) and Java Server Pages(View). Attached Javascript event listeners to asynchronously load suggests from google suggest server. Built a proxy server to support JavaScript's same-origin policy. Sent requests via the RESTful API as well as AJAX requests and added google maps API to display item location.
+
+#### part 5: Apache Spark
+Using Apache Spark's map-reduce framework to perform heavy computation in parallel, we queried twitter users that had over 1000 followers.
